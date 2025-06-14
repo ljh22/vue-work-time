@@ -1,0 +1,30 @@
+// src/styles/element-variables.scss
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+	$colors: (
+		'primary': (
+			'base': #409eff,
+			// 修改为主题色
+		),
+		'success': (
+			'base': #10b981,
+		),
+		'warning': (
+			'base': #f59e0b,
+		),
+		'danger': (
+			'base': #ef4444,
+		),
+		'error': (
+			'base': #ef4444,
+		),
+		'info': (
+			'base': #6b7280,
+		),
+	),
+	$button: (
+		'border-radius': 8px,
+	),
+	$border-radius: (
+		'base': 8px,
+	)
+);

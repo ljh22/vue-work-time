@@ -1,30 +1,43 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+	<div class="container">
+		<!-- <el-splitter>
+			<el-splitter-panel size="20%" :min="400">
+				<div class="left">
+					<TipsComp></TipsComp>
+				</div>
+			</el-splitter-panel>
+			<el-splitter-panel :min="200" size="75%">
+				<div class="right">2</div>
+			</el-splitter-panel>
+		</el-splitter> -->
+		<el-row :gutter="0">
+			<el-col :span="6">
+				<div class="left">
+					<TipsComp></TipsComp>
+				</div>
+			</el-col>
+			<el-col :span="18">
+				<div class="right">
+					<ModalComp></ModalComp>
+					<ButtonControl></ButtonControl>
+				</div>
+			</el-col>
+		</el-row>
+	</div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+<script setup lang="ts">
+	import TipsComp from './components/TipsComp.vue';
+	import ModalComp from './components/ModalComp.vue';
+</script>
+
+<style scoped lang="scss">
+	.container {
+		margin: 20px;
+		.right {
+			display: flex;
+			flex-direction: column;
+			align-content: center;
+		}
+	}
 </style>

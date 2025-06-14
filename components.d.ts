@@ -8,6 +8,26 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ButtonControl: typeof import('./src/components/ButtonControl.vue')['default']
+    ElAside: typeof import('element-plus/es')['ElAside']
+    ElButton: typeof import('element-plus/es')['ElButton']
+    ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
+    ElCalendar: typeof import('element-plus/es')['ElCalendar']
+    ElCard: typeof import('element-plus/es')['ElCard']
+    ElCol: typeof import('element-plus/es')['ElCol']
+    ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
+    ElContainer: typeof import('element-plus/es')['ElContainer']
+    ElHeader: typeof import('element-plus/es')['ElHeader']
+    ElInput: typeof import('element-plus/es')['ElInput']
+    ElLink: typeof import('element-plus/es')['ElLink']
+    ElMain: typeof import('element-plus/es')['ElMain']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
+    ElRow: typeof import('element-plus/es')['ElRow']
+    ElSplitter: typeof import('element-plus/es')['ElSplitter']
+    ElSplitterPanel: typeof import('element-plus/es')['ElSplitterPanel']
+    ElTable: typeof import('element-plus/es')['ElTable']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    ModalComp: typeof import('./src/components/ModalComp.vue')['default']
+    TipsComp: typeof import('./src/components/TipsComp.vue')['default']
   }
 }

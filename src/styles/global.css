@@ -1,0 +1,11 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+html.dark {
+	/* 自定义深色背景颜色 */
+	--el-bg-color: #626aef;
+}
