@@ -31,8 +31,9 @@ export default defineConfig({
 			},
 			scss: {
 				additionalData: `
-				@use "@/styles/element-variables.scss" as *;
-			  `, // 全局导入的Sass变量
+					@use "@/styles/variables.sass" as *;
+					@use "@/styles/element-variables.scss" as *;
+				`,
 			},
 		},
 	},

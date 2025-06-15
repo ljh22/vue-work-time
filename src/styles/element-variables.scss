@@ -1,8 +1,9 @@
 // src/styles/element-variables.scss
+@use './variables.sass' as *;
 @forward 'element-plus/theme-chalk/src/common/var.scss' with (
 	$colors: (
 		'primary': (
-			'base': #409eff,
+			'base': $primary-base,
 			// 修改为主题色
 		),
 		'success': (
