@@ -8,6 +8,7 @@
 			<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
 			<div class="calendar-box">
 				<el-date-picker
+					ref="datePickerRef"
 					v-model="selectedDate"
 					type="date"
 					placeholder="Pick a day"
@@ -51,7 +52,7 @@
 	dayjs.extend(isSameOrBefore);
 
 	const selectedDate = ref(new Date()); // 添加选中日期的响应式变量
-
+	const datePickerRef = ref();
 	// 定义emit事件
 	const emit = defineEmits<{
 		handleShowTable: [show: boolean];
@@ -60,12 +61,36 @@
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
 		console.log('val: ', val);
+		const todayMonth = dayjs(new Date()).format('M');
+		console.log('todayMonth: ', todayMonth);
+		const selectedMonth = dayjs(val).format('M');
+		console.log('selectedMonth: ', selectedMonth);
+		if (selectedMonth > todayMonth) {
+			ElMessage({
+				message: '不能选择未来的月份',
+				type: 'warning',
+			});
+			selectedDate.value = new Date(); // 重置为当前日期
+			datePickerRef.value.handleClose(); // 关闭日期选择器
+			return;
+		}
 	};
 	// 当日期面板改变时触发，比如头部的选择年、月
-	const panelChange = (date: Date | [Date, Date], mode: 'month' | 'year', view?: string) => {
+	const panelChange = (date: Date, mode: 'month' | 'year', view?: string) => {
 		console.log('view: ', view);
 		console.log('mode: ', mode);
-		console.log('date: ', date);
+		console.log('date: ', dayjs(date).format('M'), dayjs(new Date()).format('M'));
+		const todayMonth = dayjs(new Date()).format('M');
+		const selectedMonth = dayjs(date).format('M');
+		if (selectedMonth > todayMonth) {
+			ElMessage({
+				message: '不能选择未来的月份',
+				type: 'warning',
+			});
+			selectedDate.value = new Date(); // 重置为当前日期
+			datePickerRef.value.handleClose(); // 关闭日期选择器
+			return;
+		}
 	};
 	// 解析数据
 	const handleSubmit = () => {
