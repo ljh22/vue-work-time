@@ -5,8 +5,9 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import 'dayjs/locale/zh-cn';
 import dayjs from 'dayjs';
 import 'element-plus/theme-chalk/dark/css-vars.css';
-import './styles/variables.sass';
-import './styles/global.css';
+import 'element-plus/dist/index.css';
+import '@/styles/variables.sass';
+import '@/styles/global.css';
 
 dayjs.locale('zh-cn');
 // 先创建应用实例

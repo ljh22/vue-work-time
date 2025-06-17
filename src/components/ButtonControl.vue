@@ -49,6 +49,8 @@
 	import { ref } from 'vue';
 	import dayjs from 'dayjs';
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+	import { ElMessage } from 'element-plus';
+
 	dayjs.extend(isSameOrBefore);
 
 	const selectedDate = ref(new Date()); // 添加选中日期的响应式变量
@@ -62,9 +64,7 @@
 	const handleChange = (val: Date) => {
 		console.log('val: ', val);
 		const todayMonth = dayjs(new Date()).format('M');
-		console.log('todayMonth: ', todayMonth);
 		const selectedMonth = dayjs(val).format('M');
-		console.log('selectedMonth: ', selectedMonth);
 		if (selectedMonth > todayMonth) {
 			ElMessage({
 				message: '不能选择未来的月份',
@@ -79,7 +79,6 @@
 	const panelChange = (date: Date, mode: 'month' | 'year', view?: string) => {
 		console.log('view: ', view);
 		console.log('mode: ', mode);
-		console.log('date: ', dayjs(date).format('M'), dayjs(new Date()).format('M'));
 		const todayMonth = dayjs(new Date()).format('M');
 		const selectedMonth = dayjs(date).format('M');
 		if (selectedMonth > todayMonth) {
