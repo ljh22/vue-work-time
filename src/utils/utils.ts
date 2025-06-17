@@ -13,4 +13,4 @@ const isMonthExceed = (selectMonth: Date) => {
 	}
 	return false;
 };
-export { isMonthExceed };
+export default { isMonthExceed };

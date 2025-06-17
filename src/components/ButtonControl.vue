@@ -46,10 +46,12 @@
 	};
 </script>
 <script setup lang="ts">
-	import { ref } from 'vue';
+	import { inject, ref } from 'vue';
 	import dayjs from 'dayjs';
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-	import { ElMessage } from 'element-plus';
+	import type { Utils } from '@/types/utils';
+	// 注入全局工具
+	const utils = inject<Utils>('$utils');
 
 	dayjs.extend(isSameOrBefore);
 
@@ -63,13 +65,7 @@
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
 		console.log('val: ', val);
-		const todayMonth = dayjs(new Date()).format('M');
-		const selectedMonth = dayjs(val).format('M');
-		if (selectedMonth > todayMonth) {
-			ElMessage({
-				message: '不能选择未来的月份',
-				type: 'warning',
-			});
+		if (utils.isMonthExceed(val)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器
 			return;
@@ -79,13 +75,7 @@
 	const panelChange = (date: Date, mode: 'month' | 'year', view?: string) => {
 		console.log('view: ', view);
 		console.log('mode: ', mode);
-		const todayMonth = dayjs(new Date()).format('M');
-		const selectedMonth = dayjs(date).format('M');
-		if (selectedMonth > todayMonth) {
-			ElMessage({
-				message: '不能选择未来的月份',
-				type: 'warning',
-			});
+		if (utils.isMonthExceed(date)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器
 			return;

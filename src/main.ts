@@ -8,6 +8,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css';
 import 'element-plus/dist/index.css';
 import '@/styles/variables.sass';
 import '@/styles/global.css';
+import utils from '@/utils/utils';
 
 dayjs.locale('zh-cn');
 // 先创建应用实例
@@ -19,6 +20,9 @@ app.use(ElementPlus, {
 });
 // 添加 dayjs 到全局属性
 app.config.globalProperties.$dayjs = dayjs;
+// 添加 utils 到全局属性
+// 使用 provide 提供全局工具
+app.provide('$utils', utils);
 
 // 最后挂载应用
 app.mount('#app');
