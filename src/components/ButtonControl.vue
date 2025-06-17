@@ -1,7 +1,7 @@
 <template>
 	<div class="btn-container">
 		<div class="btn-control">
-			<el-button type="primary" size="large">周末除外</el-button>
+			<el-button type="primary" size="large">计算工作日</el-button>
 			<el-button type="primary" size="large">单独计算周末工时</el-button>
 		</div>
 		<div class="year-box">
@@ -35,7 +35,7 @@
 				</el-date-picker>
 			</div>
 		</div>
-		<el-button type="primary" size="large" class="submit">解析</el-button>
+		<el-button type="primary" size="large" class="submit" @click="handleSubmit">解析</el-button>
 	</div>
 </template>
 
@@ -52,6 +52,11 @@
 
 	const selectedDate = ref(new Date()); // 添加选中日期的响应式变量
 
+	// 定义emit事件
+	const emit = defineEmits<{
+		handleShowTable: [show: boolean];
+	}>();
+
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
 		console.log('val: ', val);
@@ -61,6 +66,12 @@
 		console.log('view: ', view);
 		console.log('mode: ', mode);
 		console.log('date: ', date);
+	};
+	// 解析数据
+	const handleSubmit = () => {
+		// 这里可以添加你的解析逻辑
+		console.log('开始解析数据...');
+		emit('handleShowTable', true);
 	};
 </script>
 
@@ -79,9 +90,9 @@
 			:deep(.el-button) {
 				width: 46%;
 				border: none;
-				box-shadow: 1px 2px 2px 1px #555555;
 				&:hover {
 					background-color: $primary-base;
+					box-shadow: 0px 1px 3px 1px #535454;
 				}
 			}
 		}
@@ -107,9 +118,9 @@
 			width: 44%;
 			width: 46%;
 			border: none;
-			box-shadow: 1px 2px 2px 1px #555555;
 			&:hover {
 				background-color: $primary-base;
+				box-shadow: 0px 1px 3px 1px #535454;
 			}
 		}
 	}
