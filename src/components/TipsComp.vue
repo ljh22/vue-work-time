@@ -8,11 +8,11 @@
 					</div>
 				</template>
 
-				<el-link href="https://gitee.com/ljh-project/work-time" target="_blank" class="card-content" :underline="false"
+				<el-link href="https://gitee.com/ljh-project/work-time" target="_blank" class="card-content" underline="never"
 					>有优化建议？这里
 				</el-link>
 				<template #footer>
-					<el-link target="_blank" class="card-content" :underline="false" @click="copyReferenceData"
+					<el-link target="_blank" class="card-content" underline="never" @click="copyReferenceData"
 						>复制参考数据
 					</el-link>
 				</template>
@@ -27,6 +27,7 @@
 </script>
 
 <script setup lang="ts">
+	import { ElMessage } from 'element-plus';
 	import type { TableData } from '@/types/TableData';
 
 	const referenceData: TableData[] = [

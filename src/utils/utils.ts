@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
-// 判断选择月份是否超过当天月份
 /**
  * 判断选择月份是否超过当前月份
  * @param selectMonth 选择月份
