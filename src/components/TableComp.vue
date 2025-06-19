@@ -12,7 +12,10 @@
 			:highlight-current-row="true"
 			append-filter-panel-to="body"
 			:allow-drag-last-column="false"
+			:header-cell-style="{ textAlign: 'center' }"
+			:cell-style="{ textAlign: 'center' }"
 		>
+			<el-table-column prop="empName" label="姓名" width="180" />
 			<el-table-column prop="dt" label="日期" width="180" />
 			<el-table-column prop="name" label="有效工时" width="180" />
 			<el-table-column prop="" label="打卡时间">
@@ -30,23 +33,23 @@
 	};
 </script>
 <script setup lang="ts">
-	const tableData = [
-		{ 'dt': '2024-05-06', 'checktime': '2024-05-06 08:39:52', 'type': '1' },
-		{ 'dt': '2024-05-06', 'checktime': '2024-05-06 17:40:28', 'type': '2' },
-		{ 'dt': '2024-05-07', 'checktime': '2024-05-07 08:37:59', 'type': '1' },
-		{ 'dt': '2024-05-07', 'checktime': '2024-05-07 19:38:11', 'type': '2' },
-		{ 'dt': '2024-05-08', 'checktime': '2024-05-08 08:37:07', 'type': '1' },
-		{ 'dt': '2024-05-08', 'checktime': '2024-05-08 19:53:59', 'type': '2' },
-		{ 'dt': '2024-05-09', 'checktime': '2024-05-09 08:39:34', 'type': '1' },
-		{ 'dt': '2024-05-09', 'checktime': '2024-05-09 19:34:17', 'type': '2' },
-		{ 'dt': '2024-05-10', 'checktime': '2024-05-10 08:38:17', 'type': '1' },
-		{ 'dt': '2024-05-10', 'checktime': '2024-05-10 17:45:36', 'type': '2' },
-		{ 'dt': '2024-05-11', 'checktime': '2024-05-11 08:37:25', 'type': '1' },
-		{ 'dt': '2024-05-11', 'checktime': '2024-05-11 17:43:55', 'type': '2' },
-		{ 'dt': '2024-05-13', 'checktime': '2024-05-13 08:37:33', 'type': '1' },
-		{ 'dt': '2024-05-13', 'checktime': '2024-05-13 17:39:01', 'type': '2' },
-		{ 'dt': '2024-05-14', 'checktime': '2024-05-14 08:37:43', 'type': '1' },
-	];
+	import type { TableData } from '@/types/TableData';
+	import { ref, defineProps, watch } from 'vue';
+
+	const props = defineProps({
+		showTableInitData: {
+			type: Array as () => Array<TableData>,
+			default: () => [],
+		},
+	});
+	watch(
+		() => props.showTableInitData,
+		newData => {
+			console.log('表格接收到新数据:', newData);
+		},
+		{ deep: true, immediate: false },
+	);
+	const tableData = ref<TableData[]>(props.showTableInitData);
 </script>
 
 <style scoped lang="scss">

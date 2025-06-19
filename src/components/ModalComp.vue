@@ -27,14 +27,19 @@
 		</div>
 		<el-input
 			class="time-textarea"
-			v-model="textarea2"
+			v-model="textareaValue"
 			style="width: 60%"
 			:autosize="{ minRows: 10, maxRows: 999 }"
 			type="textarea"
 			placeholder="请粘贴打卡JSON数据"
+			@change="handleChangeTextarea"
 		/>
-		<ButtonControl @handleShowTable="handleShowTable"></ButtonControl>
-		<TableComp v-show="showTable"></TableComp>
+		<ButtonControl
+			@handleShowTable="handleShowTable"
+			@handleChangeTableData="handleChangeTableData"
+			:tableInitData="tableInitData"
+		></ButtonControl>
+		<TableComp v-show="showTable" :showTableInitData="showTableInitData"></TableComp>
 	</div>
 </template>
 <script lang="ts">
@@ -44,8 +49,12 @@
 </script>
 
 <script setup lang="ts">
-	import { ref, onMounted, watch } from 'vue';
+	import { ref, onMounted, watch, inject } from 'vue';
 	import { Moon, Sunny } from '@element-plus/icons-vue';
+	import type { TableData } from '@/types/TableData';
+	import type { Utils } from '@/types/utils';
+	// 注入全局工具
+	const utils = inject<Utils>('$utils')!;
 
 	// 默认主题色值（对应 $primary-base: #409eff）
 	const defaultPrimaryColor = '#409eff';
@@ -69,8 +78,15 @@
 		'#c7158577',
 	]);
 
-	const textarea2 = ref('');
+	const textareaValue = ref('');
+	const tableInitData = ref<TableData[]>([]);
+	const showTableInitData = ref<TableData[]>([]);
 	const showTable = ref(false);
+
+	const handleChangeTextarea = (value: string) => {
+		// 处理输入框内容变化
+		tableInitData.value = JSON.parse(value);
+	};
 
 	// 从localStorage读取暗黑模式状态，默认为false
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
@@ -97,42 +113,6 @@
 		}
 	});
 
-	// 动态更新CSS自定义属性来改变主题色
-	const updateThemeColor = (newColor: string) => {
-		// 更新CSS自定义属性
-		document.documentElement.style.setProperty('--el-color-primary', newColor);
-
-		// 生成主题色的各种变体（浅色、深色等）
-		const generateColorVariants = (baseColor: string) => {
-			// 简单的颜色变体生成逻辑
-			const hex = baseColor.replace('#', '');
-			const r = parseInt(hex.substr(0, 2), 16);
-			const g = parseInt(hex.substr(2, 2), 16);
-			const b = parseInt(hex.substr(4, 2), 16);
-
-			// 生成浅色变体
-			for (let i = 1; i <= 9; i++) {
-				const alpha = i / 10;
-				const lightR = Math.round(r + (255 - r) * (1 - alpha));
-				const lightG = Math.round(g + (255 - g) * (1 - alpha));
-				const lightB = Math.round(b + (255 - b) * (1 - alpha));
-				const lightColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
-				document.documentElement.style.setProperty(`--el-color-primary-light-${i}`, lightColor);
-			}
-
-			// 生成深色变体
-			const darkR = Math.round(r * 0.8);
-			const darkG = Math.round(g * 0.8);
-			const darkB = Math.round(b * 0.8);
-			const darkColor = `rgb(${darkR}, ${darkG}, ${darkB})`;
-			document.documentElement.style.setProperty('--el-color-primary-dark-2', darkColor);
-		};
-
-		if (newColor.startsWith('#') && newColor.length === 7) {
-			generateColorVariants(newColor);
-		}
-	};
-
 	// 处理ButtonControl组件的提交完成事件
 	const handleShowTable = (show: boolean) => {
 		showTable.value = show;
@@ -141,12 +121,16 @@
 	const handleChangeColor = (value: string) => {
 		color.value = value;
 		// 动态更新主题色
-		updateThemeColor(value);
+		utils.updateThemeColor(value);
+	};
+	const handleChangeTableData = (data: TableData[]) => {
+		showTableInitData.value = data;
 	};
 
 	// 组件挂载时初始化主题色和暗黑模式
 	onMounted(() => {
-		updateThemeColor(color.value);
+		utils.updateThemeColor(color.value);
+
 		initDarkMode();
 	});
 </script>

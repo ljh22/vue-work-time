@@ -29,24 +29,9 @@
 <script setup lang="ts">
 	import { ElMessage } from 'element-plus';
 	import type { TableData } from '@/types/TableData';
+	import { tableJson } from '@/utils/json';
 
-	const referenceData: TableData[] = [
-		{ 'dt': '2024-05-06', 'checktime': '2024-05-06 08:39:52', 'type': '1' },
-		{ 'dt': '2024-05-06', 'checktime': '2024-05-06 17:40:28', 'type': '2' },
-		{ 'dt': '2024-05-07', 'checktime': '2024-05-07 08:37:59', 'type': '1' },
-		{ 'dt': '2024-05-07', 'checktime': '2024-05-07 19:38:11', 'type': '2' },
-		{ 'dt': '2024-05-08', 'checktime': '2024-05-08 08:37:07', 'type': '1' },
-		{ 'dt': '2024-05-08', 'checktime': '2024-05-08 19:53:59', 'type': '2' },
-		{ 'dt': '2024-05-09', 'checktime': '2024-05-09 08:39:34', 'type': '1' },
-		{ 'dt': '2024-05-09', 'checktime': '2024-05-09 19:34:17', 'type': '2' },
-		{ 'dt': '2024-05-10', 'checktime': '2024-05-10 08:38:17', 'type': '1' },
-		{ 'dt': '2024-05-10', 'checktime': '2024-05-10 17:45:36', 'type': '2' },
-		{ 'dt': '2024-05-11', 'checktime': '2024-05-11 08:37:25', 'type': '1' },
-		{ 'dt': '2024-05-11', 'checktime': '2024-05-11 17:43:55', 'type': '2' },
-		{ 'dt': '2024-05-13', 'checktime': '2024-05-13 08:37:33', 'type': '1' },
-		{ 'dt': '2024-05-13', 'checktime': '2024-05-13 17:39:01', 'type': '2' },
-		{ 'dt': '2024-05-14', 'checktime': '2024-05-14 08:37:43', 'type': '1' },
-	];
+	const referenceData: TableData[] = tableJson;
 	const copyReferenceData = () => {
 		// 将参考数据转换为JSON字符串
 

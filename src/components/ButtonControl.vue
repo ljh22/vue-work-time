@@ -46,20 +46,37 @@
 	};
 </script>
 <script setup lang="ts">
-	import { inject, ref } from 'vue';
+	import { inject, ref, defineProps, defineEmits, watch } from 'vue';
 	import dayjs from 'dayjs';
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 	import type { Utils } from '@/types/utils';
-	// 注入全局工具
-	const utils = inject<Utils>('$utils');
+	import type { TableData } from '@/types/TableData';
 
+	// 注入全局工具
+	const utils = inject<Utils>('$utils')!;
 	dayjs.extend(isSameOrBefore);
+
+	// 定义子组件接受的props
+	const props = defineProps({
+		tableInitData: {
+			type: Array as () => Array<TableData>,
+			default: () => [],
+		},
+	});
+	watch(
+		() => props.tableInitData,
+		newData => {
+			console.log('ButtonControl 接收到新数据:', newData);
+		},
+		{ deep: true, immediate: false },
+	);
 
 	const selectedDate = ref(new Date()); // 添加选中日期的响应式变量
 	const datePickerRef = ref();
 	// 定义emit事件
 	const emit = defineEmits<{
 		handleShowTable: [show: boolean];
+		handleChangeTableData: [data: TableData[]];
 	}>();
 
 	// 选择日期后触发。
@@ -86,6 +103,7 @@
 		// 这里可以添加你的解析逻辑
 		console.log('开始解析数据...');
 		emit('handleShowTable', true);
+		emit('handleChangeTableData', props.tableInitData);
 	};
 </script>
 
@@ -95,7 +113,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		// background-color: pink;
 		.btn-control {
 			width: 46%;
 			display: flex;
@@ -105,7 +122,7 @@
 				width: 46%;
 				border: none;
 				&:hover {
-					background-color: $primary-base;
+					background-color: var(--el-color-primary);
 					box-shadow: 0px 1px 3px 1px #535454;
 				}
 			}
@@ -133,7 +150,7 @@
 			width: 46%;
 			border: none;
 			&:hover {
-				background-color: $primary-base;
+				background-color: var(--el-color-primary);
 				box-shadow: 0px 1px 3px 1px #535454;
 			}
 		}
