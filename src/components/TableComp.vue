@@ -18,9 +18,14 @@
 			<el-table-column prop="empName" label="姓名" width="180" />
 			<el-table-column prop="dt" label="日期" width="180" />
 			<el-table-column prop="name" label="有效工时" width="180" />
-			<el-table-column prop="" label="打卡时间">
+			<el-table-column prop="" label="打卡时间（上班）">
 				<template #default="scope">
-					<el-text>{{ scope.row.checktime }}</el-text>
+					<el-text>{{ scope.row.checkInTime }}</el-text>
+				</template>
+			</el-table-column>
+			<el-table-column prop="" label="打卡时间（下班）">
+				<template #default="scope">
+					<el-text>{{ scope.row.checkOutTime }}</el-text>
 				</template>
 			</el-table-column>
 			<el-table-column prop="hour" label="所欠工时/小时" sortable />
@@ -33,8 +38,11 @@
 	};
 </script>
 <script setup lang="ts">
-	import type { TableData } from '@/types/TableData';
-	import { ref, defineProps, watch } from 'vue';
+	import type { TableData, ProcessedData } from '@/types/TableData';
+	import { ref, defineProps, watch, inject } from 'vue';
+	import type { Utils } from '@/types/utils';
+	// 注入全局工具
+	const utils = inject<Utils>('$utils')!;
 
 	const props = defineProps({
 		showTableInitData: {
@@ -42,14 +50,18 @@
 			default: () => [],
 		},
 	});
+	const tableData = ref<any[]>([]);
+
 	watch(
 		() => props.showTableInitData,
 		newData => {
-			console.log('表格接收到新数据:', newData);
+			if (newData && newData.length > 0) {
+				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData);
+				tableData.value = processedData;
+			}
 		},
 		{ deep: true, immediate: false },
 	);
-	const tableData = ref<TableData[]>(props.showTableInitData);
 </script>
 
 <style scoped lang="scss">

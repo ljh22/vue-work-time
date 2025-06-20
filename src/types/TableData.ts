@@ -1,6 +1,8 @@
 export interface TableData {
 	dt: string;
-	checktime: string;
+	checktime?: string;
+	checkInTime?: string;
+	checkOutTime?: string;
 	type: string;
 	empId?: string;
 	deptName?: string;
@@ -8,4 +10,10 @@ export interface TableData {
 	locsetname?: string;
 	empCode?: string;
 	empName: string;
+}
+export interface ProcessedData {
+	dt: string;
+	empName: string;
+	checkInTime: string;
+	checkOutTime: string;
 }

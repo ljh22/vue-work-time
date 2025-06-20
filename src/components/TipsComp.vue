@@ -34,9 +34,8 @@
 	const referenceData: TableData[] = tableJson;
 	const copyReferenceData = () => {
 		// 将参考数据转换为JSON字符串
-
 		const jsonStr = JSON.stringify(referenceData);
-		console.log('jsonStr: ', jsonStr);
+
 		// 复制到剪贴板
 		navigator.clipboard.writeText(jsonStr).then(() => {
 			ElMessage.success('参考数据已复制到剪贴板，请粘贴到输入框中');

@@ -51,6 +51,7 @@
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 	import type { Utils } from '@/types/utils';
 	import type { TableData } from '@/types/TableData';
+	import { ElMessage } from 'element-plus';
 
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
@@ -63,10 +64,11 @@
 			default: () => [],
 		},
 	});
+	const tempTableData = ref<TableData[]>([]);
 	watch(
 		() => props.tableInitData,
 		newData => {
-			console.log('ButtonControl 接收到新数据:', newData);
+			tempTableData.value = newData;
 		},
 		{ deep: true, immediate: false },
 	);
@@ -100,10 +102,18 @@
 	};
 	// 解析数据
 	const handleSubmit = () => {
-		// 这里可以添加你的解析逻辑
-		console.log('开始解析数据...');
-		emit('handleShowTable', true);
-		emit('handleChangeTableData', props.tableInitData);
+		if (props.tableInitData.length === 0) {
+			ElMessage.warning('请先输入数据');
+			return;
+		}
+		if (tempTableData.value.length !== 0) {
+			// 这里可以添加你的解析逻辑
+			console.log('开始解析数据...');
+			emit('handleShowTable', true);
+			// 创建新的数组引用，确保每次都能触发表格组件的watch监听
+			const newTableData = [...tempTableData.value];
+			emit('handleChangeTableData', newTableData);
+		}
 	};
 </script>
 
