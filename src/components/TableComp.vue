@@ -18,7 +18,11 @@
 		>
 			<el-table-column prop="empName" label="姓名" width="180" />
 			<el-table-column prop="dt" label="日期" width="180" sortable />
-			<el-table-column prop="validHours" label="有效工时/小时" width="180" />
+			<el-table-column prop="validHours" label="有效工时/小时" width="180">
+				<template #default="scope">
+					<el-text>{{ Math.floor(scope.row.validHours * 100) / 100 }}</el-text>
+				</template>
+			</el-table-column>
 			<el-table-column prop="" label="打卡时间（上班）">
 				<template #default="scope">
 					<el-input
@@ -49,7 +53,11 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable />
+			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable>
+				<template #default="scope">
+					<el-text>{{ Math.floor(scope.row.beInDebtHours * 100) / 100 }}</el-text>
+				</template>
+			</el-table-column>
 		</el-table>
 	</div>
 </template>
@@ -151,25 +159,24 @@
 	}
 	const getSummaries = (param: SummaryMethodProps) => {
 		const { columns, data } = param;
-		console.log('data: ', data);
 		const sums: (string | VNode)[] = [];
 		columns.forEach((column, index) => {
 			switch (index) {
 				case 0:
-					sums[index] = h('div', { style: { textAlign: 'center' } }, ['合计']);
+					sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, ['合计']);
 					break;
 				case 1:
-					sums[index] = h('div', { style: { textAlign: 'center' } }, [`${data.length} 天`]);
+					sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [`${data.length} 天`]);
 					break;
 				case 2:
 					const validHours = data.map(item => Number(item[column.property]));
 					if (!validHours.every(value => isNaN(value))) {
 						const totalHours = validHours.reduce((prev, curr) => {
 							const value = Number(curr);
-							if (!isNaN(value)) return prev + curr;
-							else return prev;
+							if (!isNaN(value)) return Math.floor(prev * 100) / 100 + Math.floor(curr * 100) / 100;
+							else return Math.floor(prev * 100) / 100;
 						}, 0);
-						sums[index] = h('div', { style: { textAlign: 'center' } }, [`${totalHours} 小时`]);
+						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [`${totalHours} 小时`]);
 						allHours.value = totalHours;
 						averageHours.value = totalHours / data.length;
 					}
@@ -182,11 +189,11 @@
 							if (!isNaN(value)) return prev + curr;
 							else return prev;
 						}, 0);
-						sums[index] = h('div', { style: { textAlign: 'center' } }, [`${totalHours} 小时`]);
+						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [`${totalHours} 小时`]);
 					}
 					break;
 				default:
-					sums[index] = h('div', { style: { textAlign: 'center' } }, ['--']);
+					sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, ['--']);
 					break;
 			}
 		});
