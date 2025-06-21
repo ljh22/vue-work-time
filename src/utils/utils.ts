@@ -113,19 +113,6 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 		const clockInRecord = dayRecords.find(record => record.type === '1');
 		// 找到下班打卡记录 (type='2')
 		const clockOutRecord = dayRecords.find(record => record.type === '2');
-		// 处理下班和上班之间的时间差
-		// 用dayjs把计算出来的时间戳的差值转换为小时
-		// 判断clockOutRecord?.checkOutTime下班时间是否在17:30到18:00之间
-		// if (dayjs(clockOutRecord?.checktime).hour() >= 17 && dayjs(clockOutRecord?.checktime).hour() < 18) {
-		// 	console.log(11);
-		// 	// 如果在这个区间，则计算出原时间超出17：:30到18：00的时间小时，计算的时候需要通过时间戳进行计算，这样可以保证时间戳的精确性
-		// 	const exceedHours = dayjs(clockOutRecord?.checktime).diff(
-		// 		dayjs(clockOutRecord?.checktime).hour(17).minute(30),
-		// 		'hour',
-		// 		true,
-		// 	);
-		// 	console.log('exceedHours: ', exceedHours);
-		// }
 
 		let workHours = 0; // 有效工作小时数
 		let beInDebtHours = 0; // 欠工小时数
@@ -141,13 +128,10 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 			// 精确workHours到小数点后2位，不四舍五入，例如0.239精确后0.23
 			workHours = Math.floor(workHours * 100) / 100;
 			console.log('workHours: ', workHours);
-			console.log('totalHours: ', totalHours);
-			console.log('exceedHours: ', exceedHours);
 		} else {
 			workHours = Math.floor((totalHours - 1.5 - 0.5) * 100) / 100;
 		}
 		beInDebtHours = Math.floor((8 - workHours) * 100) / 100;
-		// console.log('timeDiff: ', dayjs(timeDiff).format('H'));
 
 		return {
 			dt: date,
