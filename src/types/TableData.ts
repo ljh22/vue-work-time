@@ -13,7 +13,11 @@ export interface TableData {
 }
 export interface ProcessedData {
 	dt: string;
+	validHours: number;
+	beInDebtHours: number;
 	empName: string;
 	checkInTime: string;
 	checkOutTime: string;
+	isShowCheckInEdit: boolean;
+	isShowCheckOutEdit: boolean;
 }

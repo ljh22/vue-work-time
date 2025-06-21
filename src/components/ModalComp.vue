@@ -29,7 +29,7 @@
 			class="time-textarea"
 			v-model="textareaValue"
 			style="width: 60%"
-			:autosize="{ minRows: 10, maxRows: 999 }"
+			:autosize="{ minRows: 10, maxRows: 30 }"
 			type="textarea"
 			placeholder="请粘贴打卡JSON数据"
 			@change="handleChangeTextarea"
@@ -39,7 +39,7 @@
 			@handleChangeTableData="handleChangeTableData"
 			:tableInitData="tableInitData"
 		></ButtonControl>
-		<TableComp v-show="showTable" :showTableInitData="showTableInitData"></TableComp>
+		<TableComp v-if="isShowTable" :showTableInitData="showTableInitData"></TableComp>
 	</div>
 </template>
 <script lang="ts">
@@ -81,7 +81,7 @@
 	const textareaValue = ref('');
 	const tableInitData = ref<TableData[]>([]);
 	const showTableInitData = ref<TableData[]>([]);
-	const showTable = ref(false);
+	const isShowTable = ref(false);
 
 	const handleChangeTextarea = (value: string) => {
 		// 处理输入框内容变化
@@ -115,7 +115,7 @@
 
 	// 处理ButtonControl组件的提交完成事件
 	const handleShowTable = (show: boolean) => {
-		showTable.value = show;
+		isShowTable.value = show;
 	};
 
 	const handleChangeColor = (value: string) => {
@@ -197,6 +197,11 @@
 						box-shadow: 0px 2px 13px 1px var(--el-color-primary);
 					}
 				}
+			}
+		}
+		.time-textarea {
+			:deep(textarea) {
+				max-height: 400px;
 			}
 		}
 	}
