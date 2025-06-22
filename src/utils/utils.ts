@@ -118,25 +118,51 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 		let beInDebtHours = 0; // 欠工小时数
 		const clockInTime = dayjs(clockInRecord!.checktime);
 		const clockOutTime = dayjs(clockOutRecord!.checktime);
+		// console.log(
+		// 	'clockOutTime: ',
+		// 	dayjs(clockOutTime).format('x'),
+		// 	dayjs(Number(dayjs(clockOutTime).format('x'))).format('YYYY-MM-DD HH:mm:ss'),
+		// );
 		const totalHours = clockOutTime.diff(clockInTime, 'hour', true);
+		const startTime = Number(dayjs(clockInTime).format('x'));
+		const endTime = Number(dayjs(clockOutTime).format('x'));
+		// const diff = dayjs.duration(endTime - startTime).asHours();
+		const diff = endTime - startTime;
+		const enddDiff = 0;
+		// 将计算的差值时间戳，用dayjs转换为小时，显示相差几小时
+		// console.log('diff: ', diff, '---', diff);
+
 		// 判断clockOutTime下班时间是否在17:30到18:00之间
 		if (clockOutTime.hour() >= 17 && clockOutTime.hour() < 18) {
-			// 如果在这个区间，则计算出超出17：:30到18：00的时间小时
-			const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30), 'hour', true);
+			// 如果在这个区间，则计算出超出17：:30到18：00的时间小时，先转换为时间戳，在进行计算
+			const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30).second(0), 'hour', true);
+			const tempendtime = dayjs(endTime).format('YYYY-MM-DD ') + '17:30:00';
+			console.log('tempendtime: ', Number(dayjs(tempendtime).format('x')));
+			// console.log('endTime: ', dayjs(endTime).format('YYYY-MM-DD '));
+			const hourdifftime = endTime - Number(dayjs(tempendtime).format('x'));
+			console.log('endTime: ', endTime);
+			// console.log('hourdifftime: ', dayjs.duration(hourdifftime).asHours());
 			// 随后，从总小时数中减去超出的小时数和午休时间1.5小时，得到实际工作小时数
-			workHours = totalHours - exceedHours - 1.5;
+			// 将1.5小时转换为时间戳
+			console.log('diff: ', diff, dayjs.duration(diff).asHours());
+			console.log('hourdifftime: ', hourdifftime);
+			console.log('1.5 * 60 * 60: ', 1.5 * 60 * 60);
+			workHours = diff - hourdifftime - 1.5 * 60 * 60 * 1000;
+			// console.log('exceedHours: ', exceedHours);
 			// 精确workHours到小数点后2位，不四舍五入，例如0.239精确后0.23
 			// workHours = Math.floor(workHours * 100) / 100;
-			console.log('workHours: ', workHours);
+			// enddDiff = diff - exceedHours - 1.5;
 		} else {
-			workHours = totalHours - 1.5 - 0.5;
+			workHours = diff - 1.5 * 60 * 60 * 1000 - 0.5 * 60 * 60 * 1000;
 		}
-		beInDebtHours = 8 - workHours;
+		console.log('workHours: ', dayjs.duration(workHours).asHours());
+		console.log('workHours2222222222222: ', workHours);
+		beInDebtHours = 8 * 60 * 60 * 1000 - workHours;
 
 		return {
 			dt: date,
-			validHours: workHours,
-			beInDebtHours,
+			validHours: dayjs.duration(workHours).asHours(),
+			beInDebtHours: dayjs.duration(beInDebtHours).asHours(),
 			empName: clockInRecord?.empName || clockOutRecord?.empName || '',
 			checkInTime: clockInRecord?.checktime || '未打卡',
 			checkOutTime: clockOutRecord?.checktime || '未打卡',

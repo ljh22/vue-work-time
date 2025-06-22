@@ -9,7 +9,8 @@ import 'element-plus/dist/index.css';
 import '@/styles/variables.sass';
 import '@/styles/global.css';
 import utils from '@/utils/utils';
-
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 dayjs.locale('zh-cn');
 // 先创建应用实例
 const app = createApp(App);

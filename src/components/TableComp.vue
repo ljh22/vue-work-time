@@ -20,7 +20,8 @@
 			<el-table-column prop="dt" label="日期" width="180" sortable />
 			<el-table-column prop="validHours" label="有效工时/小时" width="180">
 				<template #default="scope">
-					<el-text>{{ Math.floor(scope.row.validHours * 100) / 100 }}</el-text>
+					<el-text>{{ scope.row.validHours }}</el-text>
+					<!-- <el-text>{{ Math.floor(scope.row.validHours * 100) / 100 }}</el-text> -->
 				</template>
 			</el-table-column>
 			<el-table-column prop="" label="打卡时间（上班）">
