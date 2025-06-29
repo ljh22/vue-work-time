@@ -4,7 +4,7 @@
 			<el-button type="primary" size="large" @click="chooseCalculationMethod(1)">计算工作日</el-button>
 			<el-button type="primary" size="large" @click="chooseCalculationMethod(2)">单独计算周末工时</el-button>
 		</div>
-		<div class="year-box">
+		<div class="year-box" v-if="CalculationMethodType !== -1">
 			<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
 			<div class="calendar-box">
 				<el-date-picker
@@ -36,7 +36,9 @@
 				</el-date-picker>
 			</div>
 		</div>
-		<el-button type="primary" size="large" class="submit" @click="handleSubmit">解析</el-button>
+		<el-button type="primary" size="large" class="submit" @click="handleSubmit" v-if="CalculationMethodType !== -1">
+			解析
+		</el-button>
 	</div>
 </template>
 
@@ -46,7 +48,7 @@
 	};
 </script>
 <script setup lang="ts">
-	import { inject, ref, defineProps, defineEmits, watch } from 'vue';
+	import { inject, ref, watch } from 'vue';
 	import dayjs from 'dayjs';
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 	import type { Utils } from '@/types/utils';
@@ -56,6 +58,8 @@
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
 	dayjs.extend(isSameOrBefore);
+	// 定义计算方式
+	const CalculationMethodType = ref<number>(-1);
 
 	// 定义子组件接受的props
 	const props = defineProps({
@@ -78,12 +82,11 @@
 	// 定义emit事件
 	const emit = defineEmits<{
 		handleShowTable: [show: boolean];
-		handleChangeTableData: [data: TableData[]];
+		handleChangeTableData: [data: TableData[], CalculationMethodType: number];
 	}>();
 
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
-		console.log('val: ', val);
 		if (utils.isMonthExceed(val)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器
@@ -106,21 +109,25 @@
 			ElMessage.warning('请先输入数据');
 			return;
 		}
+		if (CalculationMethodType.value === -1) {
+			ElMessage.warning('请先选择计算方式');
+			return;
+		}
 		if (tempTableData.value.length !== 0) {
 			// 这里可以添加你的解析逻辑
 			emit('handleShowTable', true);
 			// 创建新的数组引用，确保每次都能触发表格组件的watch监听
 			const newTableData = [...tempTableData.value];
-			emit('handleChangeTableData', newTableData);
+			emit('handleChangeTableData', newTableData, CalculationMethodType.value);
 		}
 	};
 	// 选择计算方式
 	const chooseCalculationMethod = (type: number) => {
-		console.log('type: ', type);
 		if (props.tableInitData.length === 0) {
 			ElMessage.warning('请先输入数据');
 			return;
 		}
+		CalculationMethodType.value = type;
 	};
 </script>
 

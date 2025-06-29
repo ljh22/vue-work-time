@@ -3,12 +3,12 @@
 		<el-row :gutter="0">
 			<el-col :span="6">
 				<div class="left">
-					<TipsComp></TipsComp>
+					<TipsComp @show-to-use="handleShowToUse"></TipsComp>
 				</div>
 			</el-col>
 			<el-col :span="18">
 				<div class="right">
-					<ModalComp></ModalComp>
+					<ModalComp :isShowUse="isShowUse" @close-use="handleCloseUse"></ModalComp>
 				</div>
 			</el-col>
 		</el-row>
@@ -16,8 +16,19 @@
 </template>
 
 <script setup lang="ts">
+	import { ref } from 'vue';
 	import TipsComp from './components/TipsComp.vue';
 	import ModalComp from './components/ModalComp.vue';
+
+	const isShowUse = ref(false);
+
+	const handleShowToUse = () => {
+		isShowUse.value = !isShowUse.value;
+	};
+
+	const handleCloseUse = () => {
+		isShowUse.value = false;
+	};
 </script>
 
 <style scoped lang="scss">

@@ -67,8 +67,9 @@ const updateThemeColor = (newColor: string) => {
  * @param tableData 表格数据
  * @returns 处理后的数据
  */
-const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
-	console.log('原始数据: ', tableData);
+const firstProcessingTableData = (tableData: TableData[], CalculationMethodType: number): ProcessedData[] => {
+	console.log('CalculationMethodType: ', CalculationMethodType);
+	// console.log('原始数据: ', tableData);
 
 	// 按日期分组打卡记录
 	const groupedByDate = tableData.reduce((acc, record) => {
@@ -106,7 +107,7 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 	});
 
 	// 处理每一天的打卡记录
-	const processedData: ProcessedData[] = Object.keys(groupedByDate).map(date => {
+	let processedData: ProcessedData[] = Object.keys(groupedByDate).map(date => {
 		const dayRecords = groupedByDate[date];
 
 		// 找到上班打卡记录 (type='1')
@@ -141,13 +142,23 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 			isShowCheckOutEdit: false,
 		};
 	});
-	// 排除周末的数据
-	processedData.forEach((item, index) => {
+	// 只显示周一到周五的数据
+	const isWeekend = (date: Date) => date.getDay() === 0 || date.getDay() === 6;
+	processedData = processedData.filter(item => {
 		const date = dayjs(item.dt).toDate();
-		if (date.getDay() === 0 || date.getDay() === 6) {
-			processedData.splice(index, 1);
-		}
+		return CalculationMethodType === 1 ? !isWeekend(date) : isWeekend(date);
 	});
+	// if (CalculationMethodType === 1) {
+	// 	processedData = processedData.filter(item => {
+	// 		const date = dayjs(item.dt).toDate();
+	// 		return date.getDay() !== 0 && date.getDay() !== 6;
+	// 	});
+	// } else {
+	// 	processedData = processedData.filter(item => {
+	// 		const date = dayjs(item.dt).toDate();
+	// 		return date.getDay() === 0 || date.getDay() === 6;
+	// 	});
+	// }
 
 	// 按日期排序
 	processedData.sort((a, b) => new Date(a.dt).getTime() - new Date(b.dt).getTime());

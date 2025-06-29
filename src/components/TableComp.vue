@@ -92,6 +92,10 @@
 			type: Array as () => Array<TableData>,
 			default: () => [],
 		},
+		CalculationMethodType: {
+			type: Number,
+			default: -1,
+		},
 	});
 	const tableData = ref<ProcessedData[]>([]);
 	const allHours = ref<number>(0); // 总工时
@@ -101,10 +105,10 @@
 	const checkOutInputRef = ref<any>(null);
 
 	watch(
-		() => props.showTableInitData,
-		newData => {
+		[() => props.showTableInitData, () => props.CalculationMethodType],
+		([newData, newType]) => {
 			if (newData && newData.length > 0) {
-				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData);
+				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
 				tableData.value = processedData;
 			}
 		},
@@ -317,7 +321,7 @@
 							}
 							.current-row .el-table__cell {
 								background: #ced6e0 !important;
-								border-right: none;
+								border-right-color: #ced6e0;
 								&:first-child {
 									border-top-left-radius: 10px;
 									border-bottom-left-radius: 10px;

@@ -4,11 +4,15 @@
 			<el-card style="max-width: 480px" shadow="hover">
 				<template #header>
 					<div class="card-header">
-						<span class="tips-title">** 如何使用？点击查看 **</span>
+						<span class="tips-title" @click="showToUse">** 如何使用？点击查看 **</span>
 					</div>
 				</template>
 
-				<el-link href="https://gitee.com/ljh-project/work-time" target="_blank" class="card-content" underline="never"
+				<el-link
+					href="https://gitee.com/ljh-project/vue-work-time"
+					target="_blank"
+					class="card-content"
+					underline="never"
 					>有优化建议？这里
 				</el-link>
 				<template #footer>
@@ -31,6 +35,10 @@
 	import type { TableData } from '@/types/TableData';
 	import { tableJson } from '@/utils/json';
 
+	const emit = defineEmits<{
+		'show-to-use': [];
+	}>();
+
 	const referenceData: TableData[] = tableJson;
 	const copyReferenceData = () => {
 		// 将参考数据转换为JSON字符串
@@ -40,6 +48,9 @@
 		navigator.clipboard.writeText(jsonStr).then(() => {
 			ElMessage.success('参考数据已复制到剪贴板，请粘贴到输入框中');
 		});
+	};
+	const showToUse = () => {
+		emit('show-to-use');
 	};
 </script>
 

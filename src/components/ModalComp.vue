@@ -39,7 +39,35 @@
 			@handleChangeTableData="handleChangeTableData"
 			:tableInitData="tableInitData"
 		></ButtonControl>
-		<TableComp v-if="isShowTable" :showTableInitData="showTableInitData"></TableComp>
+		<TableComp
+			v-if="isShowTable"
+			:showTableInitData="showTableInitData"
+			:CalculationMethodType="CalculationMethodType"
+		></TableComp>
+		<div class="how-to-use-box" v-if="props.isShowUse">
+			<div class="close-button-container">
+				<el-button type="primary" size="small" @click="handleCloseUse" class="close-button"> 关闭 </el-button>
+			</div>
+			<strong>1. 打开个人考勤，点击查看打卡数据，随后打开控制台（快捷键F12）点到 network 选项卡，清空请求数据</strong>
+			<br />
+			<br />
+			<img src="https://foruda.gitee.com/images/1711614780301895326/9c11fc4b_10888693.png" alt="" loading="lazy" />
+			<img src="https://foruda.gitee.com/images/1751190501730420066/a6ddeb8e_10888693.png" alt="" loading="lazy" />
+			<br />
+
+			<strong>2.清空数据后，选择50条数据，点击 getLocSetDataByPage 请求，切换到 response</strong>
+			<br />
+			<br />
+			<img src="https://foruda.gitee.com/images/1751190497927676192/38c3991e_10888693.png" alt="" loading="lazy" />
+			<img src="https://foruda.gitee.com/images/1711615026549164653/9f871844_10888693.png" alt="" loading="lazy" />
+			<br />
+
+			<strong>3.找到 items，点击左侧收起的小图标，之后仅仅复制这个数组,带不带后面的逗号均可以</strong>
+			<br />
+			<br />
+			<img src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png" alt="" loading="lazy" />
+			<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
+		</div>
 	</div>
 </template>
 <script lang="ts">
@@ -49,12 +77,22 @@
 </script>
 
 <script setup lang="ts">
-	import { ref, onMounted, watch, inject } from 'vue';
+	import { ref, onMounted, watch, inject, nextTick } from 'vue';
 	import { Moon, Sunny } from '@element-plus/icons-vue';
 	import type { TableData } from '@/types/TableData';
 	import type { Utils } from '@/types/utils';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
+
+	// 定义props
+	const props = defineProps<{
+		isShowUse: boolean;
+	}>();
+
+	// 定义emits
+	const emit = defineEmits<{
+		'close-use': [];
+	}>();
 
 	// 默认主题色值（对应 $primary-base: #409eff）
 	const defaultPrimaryColor = '#409eff';
@@ -82,14 +120,35 @@
 	const tableInitData = ref<TableData[]>([]);
 	const showTableInitData = ref<TableData[]>([]);
 	const isShowTable = ref(false);
+	const CalculationMethodType = ref<number>(-1);
 
 	const handleChangeTextarea = (value: string) => {
 		// 处理输入框内容变化
 		tableInitData.value = JSON.parse(value);
 	};
 
+	const handleCloseUse = () => {
+		emit('close-use');
+	};
+
 	// 从localStorage读取暗黑模式状态，默认为false
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
+
+	// 监听isShowUse变化，自动滚动到使用说明区域
+	watch(() => props.isShowUse, (newValue) => {
+		if (newValue) {
+			// 使用nextTick确保DOM已更新
+			nextTick(() => {
+				const element = document.querySelector('.how-to-use-box');
+				if (element) {
+					element.scrollIntoView({ 
+						behavior: 'smooth', 
+						block: 'start' 
+					});
+				}
+			});
+		}
+	});
 
 	// 初始化暗黑模式
 	const initDarkMode = () => {
@@ -123,8 +182,9 @@
 		// 动态更新主题色
 		utils.updateThemeColor(value);
 	};
-	const handleChangeTableData = (data: TableData[]) => {
+	const handleChangeTableData = (data: TableData[], type: number) => {
 		showTableInitData.value = data;
+		CalculationMethodType.value = type;
 	};
 
 	// 组件挂载时初始化主题色和暗黑模式
@@ -202,6 +262,46 @@
 		.time-textarea {
 			:deep(textarea) {
 				max-height: 400px;
+			}
+		}
+		.how-to-use-box {
+			margin-top: 20px;
+			width: 90%;
+			margin-left: -185px;
+			display: flex;
+			padding: 24px;
+			border: 1px solid #ccc;
+			flex-direction: column;
+			position: relative;
+			img {
+				border: 1px solid #ccc;
+				margin-bottom: 10px;
+			}
+
+			.close-button-container {
+				position: fixed;
+				top: 50%;
+				right: 20px;
+				transform: translateY(-50%);
+				z-index: 1000;
+
+				.close-button {
+					border-radius: 50%;
+					width: 40px;
+					height: 40px;
+					padding: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 12px;
+				}
+				:deep(.el-button) {
+					border: none;
+					&:hover {
+						background-color: var(--el-color-primary);
+						box-shadow: 0px 1px 3px 1px #535454;
+					}
+				}
 			}
 		}
 	}
