@@ -16,10 +16,11 @@
 			:header-cell-style="{ textAlign: 'center' }"
 			:cell-style="{ textAlign: 'center' }"
 			:summary-method="getSummaries"
+			@header-dragend="handleHeaderDragend"
 		>
-			<el-table-column prop="empName" label="姓名" width="180" />
-			<el-table-column prop="dt" label="日期" width="180" sortable />
-			<el-table-column prop="validHours" label="有效工时/小时" width="180">
+			<el-table-column prop="empName" label="姓名" width="180" min-width="120" />
+			<el-table-column prop="dt" label="日期" width="180" sortable min-width="120" />
+			<el-table-column prop="validHours" label="有效工时/小时" width="180" min-width="120">
 				<template #default="scope">
 					<el-tag type="success" v-if="Number(customRound(scope.row.validHours)) >= 8">
 						{{ customRound(scope.row.validHours) }}
@@ -29,7 +30,7 @@
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column prop="" label="打卡时间（上班）">
+			<el-table-column prop="" label="打卡时间（上班）" width="200" min-width="220">
 				<template #default="scope">
 					<el-input
 						v-model="scope.row.checkInTime"
@@ -44,7 +45,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="" label="打卡时间（下班）">
+			<el-table-column prop="" label="打卡时间（下班）" width="200" min-width="220">
 				<template #default="scope">
 					<el-input
 						v-model="scope.row.checkOutTime"
@@ -59,7 +60,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable>
+			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable min-width="120">
 				<template #default="scope">
 					<el-tag type="success" v-if="Number(customRound(scope.row.beInDebtHours)) <= 0">
 						{{ customRound(scope.row.beInDebtHours) }}
@@ -84,6 +85,7 @@
 	import type { TableColumnCtx } from 'element-plus';
 	import type { Utils } from '@/types/utils';
 	import { Edit } from '@element-plus/icons-vue';
+	import { ElMessage } from 'element-plus';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
 
@@ -130,6 +132,8 @@
 
 	// 显示上班时间编辑框
 	const handleShowCheckInTimeEdit = (row: ProcessedData) => {
+		ElMessage.warning('暂未开发完毕！！');
+		return;
 		// 关闭其他编辑状态
 		tableData.value.forEach(item => {
 			item.isShowCheckInEdit = false;
@@ -149,6 +153,8 @@
 
 	// 显示下班时间编辑框
 	const handleShowCheckOutTimeEdit = (row: ProcessedData) => {
+		ElMessage.warning('暂未开发完毕！！');
+		return;
 		// 关闭其他编辑状态
 		tableData.value.forEach(item => {
 			item.isShowCheckInEdit = false;
@@ -276,6 +282,17 @@
 		}
 
 		return (isNegative ? '-' : '') + result;
+	};
+	const handleHeaderDragend = (newWidth: number, oldWidth: number, column: any, event: MouseEvent) => {
+		console.log('newWidth: ', newWidth);
+		console.log('oldWidth: ', oldWidth);
+		console.log('column: ', column);
+		console.log('event: ', event);
+		const minWidth = column.minWidth || 120;
+		if (newWidth <= minWidth) {
+			column.width = minWidth;
+			console.log('column.width: ', column.width);
+		}
 	};
 </script>
 

@@ -43,11 +43,14 @@
 	const copyReferenceData = () => {
 		// 将参考数据转换为JSON字符串
 		const jsonStr = JSON.stringify(referenceData);
-
-		// 复制到剪贴板
-		navigator.clipboard.writeText(jsonStr).then(() => {
-			ElMessage.success('参考数据已复制到剪贴板，请粘贴到输入框中');
-		});
+		try {
+			// 复制到剪贴板
+			navigator.clipboard.writeText(jsonStr).then(() => {
+				ElMessage.success('参考数据已复制到剪贴板，请粘贴到输入框中');
+			});
+		} catch (error) {
+			ElMessage.error('复制失败，请重试，或联系作者');
+		}
 	};
 	const showToUse = () => {
 		emit('show-to-use');
