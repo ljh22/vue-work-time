@@ -117,12 +117,14 @@
 	// 上班时间输入框失去焦点事件
 	const handleCheckInBlur = (row: ProcessedData) => {
 		row.isShowCheckInEdit = false;
+		// 开发环境下可以打开调试
 		console.log('上班时间编辑完成: ', row);
 	};
 
 	// 下班时间输入框失去焦点事件
 	const handleCheckOutBlur = (row: ProcessedData) => {
 		row.isShowCheckOutEdit = false;
+		// 开发环境下可以打开调试
 		console.log('下班时间编辑完成: ', row);
 	};
 
