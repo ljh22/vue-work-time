@@ -1,8 +1,8 @@
 <template>
 	<div class="btn-container">
 		<div class="btn-control">
-			<el-button type="primary" size="large">计算工作日</el-button>
-			<el-button type="primary" size="large">单独计算周末工时</el-button>
+			<el-button type="primary" size="large" @click="chooseCalculationMethod(1)">计算工作日</el-button>
+			<el-button type="primary" size="large" @click="chooseCalculationMethod(2)">单独计算周末工时</el-button>
 		</div>
 		<div class="year-box">
 			<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
@@ -108,11 +108,18 @@
 		}
 		if (tempTableData.value.length !== 0) {
 			// 这里可以添加你的解析逻辑
-			console.log('开始解析数据...');
 			emit('handleShowTable', true);
 			// 创建新的数组引用，确保每次都能触发表格组件的watch监听
 			const newTableData = [...tempTableData.value];
 			emit('handleChangeTableData', newTableData);
+		}
+	};
+	// 选择计算方式
+	const chooseCalculationMethod = (type: number) => {
+		console.log('type: ', type);
+		if (props.tableInitData.length === 0) {
+			ElMessage.warning('请先输入数据');
+			return;
 		}
 	};
 </script>

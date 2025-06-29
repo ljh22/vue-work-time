@@ -125,9 +125,6 @@ const firstProcessingTableData = (tableData: TableData[]): ProcessedData[] => {
 			const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30), 'hour', true);
 			// 随后，从总小时数中减去超出的小时数和午休时间1.5小时，得到实际工作小时数
 			workHours = totalHours - exceedHours - 1.5;
-			// 精确workHours到小数点后2位，不四舍五入，例如0.239精确后0.23
-			// workHours = Math.floor(workHours * 100) / 100;
-			console.log('workHours: ', workHours);
 		} else {
 			workHours = totalHours - 1.5 - 0.5;
 		}

@@ -1,8 +1,9 @@
 <template>
 	<div class="table-container">
-		<el-text class="mx-1 title-text"
-			>本月总工时：{{ allHours }},   平均工时为：8.18,   还差规定平均8小时工时为：-1.27 小时</el-text
-		>
+		<el-text class="mx-1 title-text">
+			本月总工时：{{ allHours }}, 平均工时为：{{ averageHours }}
+			<span v-if="beInDebtHours > 0"> , 还差规定平均 8 小时工时为：{{ beInDebtHours }} 小时 </span>
+		</el-text>
 		<el-table
 			:data="tableData"
 			style="width: 100%"
@@ -20,7 +21,12 @@
 			<el-table-column prop="dt" label="日期" width="180" sortable />
 			<el-table-column prop="validHours" label="有效工时/小时" width="180">
 				<template #default="scope">
-					<el-text>{{ Math.floor(scope.row.validHours * 100) / 100 }}</el-text>
+					<el-tag type="success" v-if="Number(customRound(scope.row.validHours)) >= 8">
+						{{ customRound(scope.row.validHours) }}
+					</el-tag>
+					<el-tag type="danger" v-else>
+						{{ customRound(scope.row.validHours) }}
+					</el-tag>
 				</template>
 			</el-table-column>
 			<el-table-column prop="" label="打卡时间（上班）">
@@ -55,7 +61,12 @@
 			</el-table-column>
 			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable>
 				<template #default="scope">
-					<el-text>{{ Math.floor(scope.row.beInDebtHours * 100) / 100 }}</el-text>
+					<el-tag type="success" v-if="Number(customRound(scope.row.beInDebtHours)) <= 0">
+						{{ customRound(scope.row.beInDebtHours) }}
+					</el-tag>
+					<el-tag type="danger" v-else>
+						{{ customRound(scope.row.beInDebtHours) }}
+					</el-tag>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -85,6 +96,7 @@
 	const tableData = ref<ProcessedData[]>([]);
 	const allHours = ref<number>(0); // 总工时
 	const averageHours = ref<number>(0); // 平均工时
+	const beInDebtHours = ref<number>(0); // 所欠工时
 	const checkInInputRef = ref<any>(null);
 	const checkOutInputRef = ref<any>(null);
 
@@ -157,6 +169,7 @@
 		columns: TableColumnCtx<T>[];
 		data: T[];
 	}
+	// 合计行
 	const getSummaries = (param: SummaryMethodProps) => {
 		const { columns, data } = param;
 		const sums: (string | VNode)[] = [];
@@ -173,23 +186,28 @@
 					if (!validHours.every(value => isNaN(value))) {
 						const totalHours = validHours.reduce((prev, curr) => {
 							const value = Number(curr);
-							if (!isNaN(value)) return Math.floor(prev * 100) / 100 + Math.floor(curr * 100) / 100;
-							else return Math.floor(prev * 100) / 100;
+							if (!isNaN(value)) return prev + curr;
+							else return prev;
 						}, 0);
-						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [`${totalHours} 小时`]);
-						allHours.value = totalHours;
-						averageHours.value = totalHours / data.length;
+						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [
+							`${Math.round(totalHours * 100) / 100} 小时`,
+						]);
+						allHours.value = Math.round(totalHours * 100) / 100;
+						averageHours.value = Math.round((totalHours / data.length) * 100) / 100;
 					}
 					break;
 				case 5:
-					const beInDebtHours = data.map(item => Number(item[column.property]));
-					if (!beInDebtHours.every(value => isNaN(value))) {
-						const totalHours = beInDebtHours.reduce((prev, curr) => {
+					const beInDebtHoursArr = data.map(item => Number(item[column.property]));
+					if (!beInDebtHoursArr.every(value => isNaN(value))) {
+						const totalHours = beInDebtHoursArr.reduce((prev, curr) => {
 							const value = Number(curr);
 							if (!isNaN(value)) return prev + curr;
 							else return prev;
 						}, 0);
-						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [`${totalHours} 小时`]);
+						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [
+							`${customRound(totalHours)} 小时`,
+						]);
+						beInDebtHours.value = Number(customRound(totalHours));
 					}
 					break;
 				default:
@@ -199,6 +217,59 @@
 		});
 
 		return sums;
+	};
+	// 自定义四舍五入函数
+	const customRound = (num: number) => {
+		if (typeof num !== 'number' || isNaN(num)) {
+			return 'Invalid input';
+		}
+
+		// 处理负数：转换为正数处理后再加回负号
+		const isNegative = num < 0;
+		const absNum = Math.abs(num);
+
+		// 计算整数部分
+		const n = Math.floor(absNum);
+		const remainder = absNum - n;
+
+		// 检查是否在特殊进位区间 [n + 0.98, n + 1)
+		if (remainder >= 0.98 && remainder < 1) {
+			return (isNegative ? '-' : '') + (n + 1).toFixed(2);
+		}
+
+		// 将数字转为字符串检查小数部分
+		const numStr = absNum.toString();
+		const decimalIndex = numStr.indexOf('.');
+
+		// 无小数部分时直接返回
+		if (decimalIndex === -1) {
+			return (isNegative ? '-' : '') + absNum.toFixed(2);
+		}
+
+		// 提取小数部分并检查第三位及之后是否有非零数字
+		const decimals = numStr.slice(decimalIndex + 1);
+		let hasNonZeroBeyondSecond = false;
+
+		if (decimals.length > 2) {
+			for (let i = 2; i < decimals.length; i++) {
+				if (decimals[i] !== '0') {
+					hasNonZeroBeyondSecond = true;
+					break;
+				}
+			}
+		}
+
+		// 根据检测结果处理数字
+		let result;
+		if (hasNonZeroBeyondSecond) {
+			// 加0.01进位后四舍五入
+			result = (absNum + 0.01).toFixed(2);
+		} else {
+			// 直接四舍五入
+			result = absNum.toFixed(2);
+		}
+
+		return (isNegative ? '-' : '') + result;
 	};
 </script>
 
@@ -234,11 +305,27 @@
 					.el-table__body {
 						tbody {
 							.el-table__row--striped .el-table__cell {
-								background: lighten($primary-base, 30%);
+								background: color-mix(in srgb, var(--el-color-primary) 40%, white 30%);
+								&:first-child {
+									border-top-left-radius: 10px;
+									border-bottom-left-radius: 10px;
+								}
+								&:last-child {
+									border-top-right-radius: 10px;
+									border-bottom-right-radius: 10px;
+								}
 							}
 							.current-row .el-table__cell {
-								background: $primary-base !important;
+								background: #ced6e0 !important;
 								border-right: none;
+								&:first-child {
+									border-top-left-radius: 10px;
+									border-bottom-left-radius: 10px;
+								}
+								&:last-child {
+									border-top-right-radius: 10px;
+									border-bottom-right-radius: 10px;
+								}
 							}
 						}
 					}
