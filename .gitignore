@@ -143,6 +143,7 @@ build/
 # Temporary files
 *.tmp
 *.temp
+.vscode
 
 # Package manager lock files (keep only one)
 # yarn.lock
