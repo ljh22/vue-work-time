@@ -124,7 +124,11 @@
 
 	const handleChangeTextarea = (value: string) => {
 		// 处理输入框内容变化
-		tableInitData.value = JSON.parse(value);
+		if (value.slice(-1) == ',') {
+			tableInitData.value = JSON.parse(value.slice(0, -1));
+		} else {
+			tableInitData.value = JSON.parse(value);
+		}
 	};
 
 	const handleCloseUse = () => {
@@ -135,20 +139,23 @@
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 	// 监听isShowUse变化，自动滚动到使用说明区域
-	watch(() => props.isShowUse, (newValue) => {
-		if (newValue) {
-			// 使用nextTick确保DOM已更新
-			nextTick(() => {
-				const element = document.querySelector('.how-to-use-box');
-				if (element) {
-					element.scrollIntoView({ 
-						behavior: 'smooth', 
-						block: 'start' 
-					});
-				}
-			});
-		}
-	});
+	watch(
+		() => props.isShowUse,
+		newValue => {
+			if (newValue) {
+				// 使用nextTick确保DOM已更新
+				nextTick(() => {
+					const element = document.querySelector('.how-to-use-box');
+					if (element) {
+						element.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start',
+						});
+					}
+				});
+			}
+		},
+	);
 
 	// 初始化暗黑模式
 	const initDarkMode = () => {

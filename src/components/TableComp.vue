@@ -80,7 +80,7 @@
 </script>
 <script setup lang="ts">
 	import type { TableData, ProcessedData } from '@/types/TableData';
-	import { ref, defineProps, watch, inject, h, nextTick } from 'vue';
+	import { ref, watch, inject, h, nextTick } from 'vue';
 	import type { VNode } from 'vue';
 	import type { TableColumnCtx } from 'element-plus';
 	import type { Utils } from '@/types/utils';
