@@ -87,6 +87,8 @@
 
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
+		ElMessage.warning('当前功能正在更新中，敬请期待！');
+		return;
 		if (utils.isMonthExceed(val)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器
