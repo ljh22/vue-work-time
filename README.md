@@ -2,6 +2,12 @@
 
 ## <span style="color:red;">拉取优化后记得提交哈！！！！！</span>
 
+## 安装依赖
+
+```shell
+pnpm install
+```
+
 ### 介绍
 
 计算工时小工具，网站中所用到的 JSON 数据模板，参考左侧目录的“JSON 数据模板”！

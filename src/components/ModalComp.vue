@@ -43,6 +43,7 @@
 			v-if="isShowTable"
 			:showTableInitData="showTableInitData"
 			:CalculationMethodType="CalculationMethodType"
+			@update-data="handleUpdateTableData"
 		></TableComp>
 		<div class="how-to-use-box" v-if="props.isShowUse">
 			<div class="close-button-container">
@@ -192,6 +193,11 @@
 	const handleChangeTableData = (data: TableData[], type: number) => {
 		showTableInitData.value = data;
 		CalculationMethodType.value = type;
+	};
+
+	// 处理TableComp组件的数据更新事件
+	const handleUpdateTableData = (data: TableData[]) => {
+		showTableInitData.value = data;
 	};
 
 	// 组件挂载时初始化主题色和暗黑模式

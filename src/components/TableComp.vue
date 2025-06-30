@@ -99,12 +99,48 @@
 			default: -1,
 		},
 	});
+
+	const emit = defineEmits<{
+		'update-data': [data: TableData[]];
+	}>();
 	const tableData = ref<ProcessedData[]>([]);
 	const allHours = ref<number>(0); // 总工时
 	const averageHours = ref<number>(0); // 平均工时
 	const beInDebtHours = ref<number>(0); // 所欠工时
 	const checkInInputRef = ref<any>(null);
 	const checkOutInputRef = ref<any>(null);
+
+	// 验证时间格式是否正确
+	const validateTimeFormat = (timeStr: string): boolean => {
+		// 检查格式是否为 YYYY-MM-DD HH:MM:SS
+		const timeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+		if (!timeRegex.test(timeStr)) {
+			return false;
+		}
+
+		// 提取时间部分进行详细验证
+		const timePart = timeStr.slice(11); // 获取 HH:MM:SS 部分
+		const [hours, minutes, seconds] = timePart.split(':').map(Number);
+
+		// 验证时分秒的范围
+		if (hours < 0 || hours > 23) return false;
+		if (minutes < 0 || minutes > 59) return false;
+		if (seconds < 0 || seconds > 59) return false;
+
+		// 验证是否为有效数字（排除NaN）
+		if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) return false;
+
+		return true;
+	};
+
+	// 恢复原始时间的辅助函数
+	const restoreOriginalTime = (row: ProcessedData, originalTime: string, isCheckIn: boolean = true): void => {
+		if (isCheckIn) {
+			row.checkInTime = originalTime;
+		} else {
+			row.checkOutTime = originalTime;
+		}
+	};
 
 	watch(
 		[() => props.showTableInitData, () => props.CalculationMethodType],
@@ -119,21 +155,105 @@
 	// 上班时间输入框失去焦点事件
 	const handleCheckInBlur = (row: ProcessedData) => {
 		row.isShowCheckInEdit = false;
-		// 开发环境下可以打开调试
-		console.log('上班时间编辑完成: ', row);
+		const changedCheckInTime = row.checkInTime;
+
+		// 从原始数据中获取真正的原始时间用于恢复
+		const originalCheckInRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '1');
+		const originalCheckInTime = originalCheckInRecord ? originalCheckInRecord.checktime : `${row.dt} 09:00:00`;
+
+		// 验证时间格式
+		if (!validateTimeFormat(changedCheckInTime)) {
+			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
+			restoreOriginalTime(row, originalCheckInTime!, true);
+			return;
+		}
+
+		const modificationDateStr = changedCheckInTime.slice(0, 10);
+		const originalDateStr = row.dt;
+
+		// 检查是否修改了日期，如果修改了日期则不允许修改，恢复原始时间
+		if (modificationDateStr !== originalDateStr) {
+			ElMessage.error('不允许修改日期，请重新修改上班时间');
+			// 恢复原始时间（保持原日期，只使用修改后的时间部分）
+			const originalTime = changedCheckInTime.slice(11); // 获取时间部分 HH:mm:ss
+			row.checkInTime = `${originalDateStr} ${originalTime}`;
+			return;
+		}
+
+		let tempTableData = [...props.showTableInitData];
+		let index = tempTableData.findIndex(item => item.dt === modificationDateStr && item.type === '1');
+
+		// 如果找不到对应的上班打卡记录，创建一个新的
+		if (index === -1) {
+			// 创建新的上班打卡记录
+			const newCheckInRecord = {
+				dt: modificationDateStr,
+				checktime: changedCheckInTime,
+				empName: row.empName,
+				type: '1',
+			};
+			tempTableData.push(newCheckInRecord);
+		} else {
+			// 修改现有的上班打卡记录
+			tempTableData[index].checktime = changedCheckInTime;
+		}
+
+		// 向父组件发射更新事件，避免重复调用firstProcessingTableData
+		emit('update-data', tempTableData);
 	};
 
 	// 下班时间输入框失去焦点事件
 	const handleCheckOutBlur = (row: ProcessedData) => {
 		row.isShowCheckOutEdit = false;
-		// 开发环境下可以打开调试
-		console.log('下班时间编辑完成: ', row);
+		const changedCheckOutTime = row.checkOutTime;
+
+		// 从原始数据中获取真正的原始时间用于恢复
+		const originalCheckOutRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '2');
+		const originalCheckOutTime = originalCheckOutRecord ? originalCheckOutRecord.checktime : `${row.dt} 18:00:00`;
+
+		// 验证时间格式
+		if (!validateTimeFormat(changedCheckOutTime)) {
+			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
+			restoreOriginalTime(row, originalCheckOutTime!, false);
+			return;
+		}
+
+		const modificationDateStr = changedCheckOutTime.slice(0, 10);
+		const originalDateStr = row.dt;
+
+		// 检查是否修改了日期，如果修改了日期则不允许修改，恢复原始时间
+		if (modificationDateStr !== originalDateStr) {
+			ElMessage.error('不允许修改日期，请重新修改下班时间');
+			// 恢复原始时间（保持原日期，只使用修改后的时间部分）
+			const originalTime = changedCheckOutTime.slice(11); // 获取时间部分 HH:mm:ss
+			row.checkOutTime = `${originalDateStr} ${originalTime}`;
+			return;
+		}
+
+		let tempTableData = [...props.showTableInitData];
+		let index = tempTableData.findIndex(item => item.dt === modificationDateStr && item.type === '2');
+
+		// 如果找不到对应的下班打卡记录，创建一个新的
+		if (index === -1) {
+			// 创建新的下班打卡记录
+			const newCheckOutRecord = {
+				dt: modificationDateStr,
+				checktime: changedCheckOutTime,
+				empName: row.empName,
+				type: '2',
+			};
+			tempTableData.push(newCheckOutRecord);
+		} else {
+			// 修改现有的下班打卡记录
+			tempTableData[index].checktime = changedCheckOutTime;
+		}
+
+		// 向父组件发射更新事件，避免重复调用firstProcessingTableData
+		emit('update-data', tempTableData);
 	};
 
 	// 显示上班时间编辑框
 	const handleShowCheckInTimeEdit = (row: ProcessedData) => {
-		ElMessage.warning('暂未开发完毕！！');
-		return;
 		// 关闭其他编辑状态
 		tableData.value.forEach(item => {
 			item.isShowCheckInEdit = false;
@@ -153,8 +273,6 @@
 
 	// 显示下班时间编辑框
 	const handleShowCheckOutTimeEdit = (row: ProcessedData) => {
-		ElMessage.warning('暂未开发完毕！！');
-		return;
 		// 关闭其他编辑状态
 		tableData.value.forEach(item => {
 			item.isShowCheckInEdit = false;
@@ -283,15 +401,10 @@
 
 		return (isNegative ? '-' : '') + result;
 	};
-	const handleHeaderDragend = (newWidth: number, oldWidth: number, column: any, event: MouseEvent) => {
-		console.log('newWidth: ', newWidth);
-		console.log('oldWidth: ', oldWidth);
-		console.log('column: ', column);
-		console.log('event: ', event);
+	const handleHeaderDragend = (newWidth: number, _oldWidth: number, column: any, _event: MouseEvent) => {
 		const minWidth = column.minWidth || 120;
 		if (newWidth <= minWidth) {
 			column.width = minWidth;
-			console.log('column.width: ', column.width);
 		}
 	};
 </script>

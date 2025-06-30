@@ -68,7 +68,7 @@ const updateThemeColor = (newColor: string) => {
  * @returns 处理后的数据
  */
 const firstProcessingTableData = (tableData: TableData[], CalculationMethodType: number): ProcessedData[] => {
-	// console.log('原始数据: ', tableData);
+	console.log('原始数据: ', tableData);
 
 	// 按日期分组打卡记录
 	const groupedByDate = tableData.reduce((acc, record) => {
@@ -162,7 +162,6 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 	// 按日期排序
 	processedData.sort((a, b) => new Date(a.dt).getTime() - new Date(b.dt).getTime());
 
-	// 开发环境下可以打开调试
 	// console.log('处理后的数据: ', processedData);
 	return processedData;
 };
