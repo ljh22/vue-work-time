@@ -276,6 +276,39 @@
 			:deep(textarea) {
 				max-height: 400px;
 			}
+			// 确保聚焦状态下的边框在有滚动条时也能正常显示
+			:deep(.el-textarea__inner) {
+				&:focus {
+					// border: 1px solid var(--el-color-primary) !important;
+					box-shadow: 0 0 0 1px var(--el-color-primary) !important;
+					outline: none !important;
+				}
+				// 确保滚动条不会覆盖边框
+				box-sizing: border-box;
+				padding-right: 12px;
+				// 修复滚动条角落的白色间隙问题
+				scrollbar-color: var(--el-border-color-light) transparent;
+				scrollbar-width: thin;
+				// Webkit浏览器滚动条样式
+				&::-webkit-scrollbar {
+					width: 8px;
+				}
+				&::-webkit-scrollbar-track {
+					background: transparent;
+					border-radius: 10px;
+				}
+				&::-webkit-scrollbar-thumb {
+					background: var(--el-border-color-light);
+					border-radius: 10px;
+					&:hover {
+						background: var(--el-border-color);
+					}
+				}
+				// 修复滚动条角落
+				&::-webkit-scrollbar-corner {
+					background: transparent;
+				}
+			}
 		}
 		.how-to-use-box {
 			margin-top: 20px;
