@@ -52,7 +52,7 @@
 	import dayjs from 'dayjs';
 	import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 	import type { Utils } from '@/types/utils';
-	import type { TableData } from '@/types/TableData';
+	import type { TableData, ProcessedData } from '@/types/TableData';
 	import { ElMessage } from 'element-plus';
 
 	// 注入全局工具
@@ -83,22 +83,22 @@
 	const emit = defineEmits<{
 		handleShowTable: [show: boolean];
 		handleChangeTableData: [data: TableData[], CalculationMethodType: number];
+		handleChangeTableDataNew: [data: ProcessedData[], CalculationMethodType: number];
 	}>();
 
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
-		ElMessage.warning('当前功能正在更新中，敬请期待！');
-		return;
 		if (utils.isMonthExceed(val)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器
 			return;
 		}
+		const newTableData = utils.addDate(val, props.tableInitData);
+		emit('handleChangeTableDataNew', newTableData, CalculationMethodType.value);
+		ElMessage.success('日期已添加到表格数据中');
 	};
 	// 当日期面板改变时触发，比如头部的选择年、月
-	const panelChange = (date: Date, mode: 'month' | 'year', view?: string) => {
-		console.log('view: ', view);
-		console.log('mode: ', mode);
+	const panelChange = (date: Date, _mode: 'month' | 'year', _view?: string) => {
 		if (utils.isMonthExceed(date)) {
 			selectedDate.value = new Date(); // 重置为当前日期
 			datePickerRef.value.handleClose(); // 关闭日期选择器

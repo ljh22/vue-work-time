@@ -4,4 +4,5 @@ export interface Utils {
 	isMonthExceed: (selectMonth: Date) => boolean;
 	updateThemeColor: (newColor: string) => void;
 	firstProcessingTableData: (tableData: TableData[], CalculationMethodType: number) => ProcessedData[];
+	addDate: (date: Date, tableData: TableData[]) => ProcessedData[];
 }

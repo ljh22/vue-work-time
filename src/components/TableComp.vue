@@ -94,6 +94,10 @@
 			type: Array as () => Array<TableData>,
 			default: () => [],
 		},
+		showTableDataNew: {
+			type: Array as () => Array<ProcessedData>,
+			default: () => [],
+		},
 		CalculationMethodType: {
 			type: Number,
 			default: -1,
@@ -143,11 +147,14 @@
 	};
 
 	watch(
-		[() => props.showTableInitData, () => props.CalculationMethodType],
-		([newData, newType]) => {
-			if (newData && newData.length > 0) {
+		[() => props.showTableInitData, () => props.CalculationMethodType, () => props.showTableDataNew],
+		([newData, newType, newProcessedData]) => {
+			console.log('newProcessedData: ', newProcessedData.length);
+			if (newProcessedData.length === 0) {
 				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
 				tableData.value = processedData;
+			} else {
+				tableData.value = [...newProcessedData];
 			}
 		},
 		{ deep: true, immediate: true },

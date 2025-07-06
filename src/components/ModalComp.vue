@@ -37,11 +37,13 @@
 		<ButtonControl
 			@handleShowTable="handleShowTable"
 			@handleChangeTableData="handleChangeTableData"
+			@handleChangeTableDataNew="handleChangeTableDataNew"
 			:tableInitData="tableInitData"
 		></ButtonControl>
 		<TableComp
 			v-if="isShowTable"
 			:showTableInitData="showTableInitData"
+			:showTableDataNew="showTableDataNew"
 			:CalculationMethodType="CalculationMethodType"
 			@update-data="handleUpdateTableData"
 		></TableComp>
@@ -80,7 +82,7 @@
 <script setup lang="ts">
 	import { ref, onMounted, watch, inject, nextTick } from 'vue';
 	import { Moon, Sunny } from '@element-plus/icons-vue';
-	import type { TableData } from '@/types/TableData';
+	import type { TableData, ProcessedData } from '@/types/TableData';
 	import type { Utils } from '@/types/utils';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
@@ -120,6 +122,7 @@
 	const textareaValue = ref('');
 	const tableInitData = ref<TableData[]>([]);
 	const showTableInitData = ref<TableData[]>([]);
+	const showTableDataNew = ref<ProcessedData[]>([]);
 	const isShowTable = ref(false);
 	const CalculationMethodType = ref<number>(-1);
 
@@ -192,6 +195,11 @@
 	};
 	const handleChangeTableData = (data: TableData[], type: number) => {
 		showTableInitData.value = data;
+		CalculationMethodType.value = type;
+	};
+	const handleChangeTableDataNew = (data: ProcessedData[], type: number) => {
+		console.log('data: ', data);
+		showTableDataNew.value = data;
 		CalculationMethodType.value = type;
 	};
 
