@@ -93,6 +93,17 @@
 			datePickerRef.value.handleClose(); // 关闭日期选择器
 			return;
 		}
+
+		// 检查选择的日期是否在原始数据中存在
+		const selectedDateStr = dayjs(val).format('YYYY-MM-DD');
+		const dateExists = props.tableInitData.some(item => item.dt === selectedDateStr);
+
+		if (!dateExists) {
+			ElMessage.warning(`选择的日期 ${selectedDateStr} 在打卡数据中不存在，请选择有效的打卡日期`);
+			selectedDate.value = new Date(); // 重置为当前日期
+			return;
+		}
+
 		const newTableData = utils.addDate(val, props.tableInitData);
 		emit('handleChangeTableDataNew', newTableData, CalculationMethodType.value);
 		ElMessage.success('日期已添加到表格数据中');
