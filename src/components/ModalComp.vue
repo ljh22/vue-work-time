@@ -33,6 +33,7 @@
 			type="textarea"
 			placeholder="请粘贴打卡JSON数据"
 			@change="handleChangeTextarea"
+			@focus="handleTextareaFocus"
 		/>
 		<ButtonControl
 			@handleShowTable="handleShowTable"
@@ -133,6 +134,14 @@
 		} else {
 			tableInitData.value = JSON.parse(value);
 		}
+	};
+
+	const handleTextareaFocus = () => {
+		// 当textarea聚焦时，清空表格数据
+		isShowTable.value = false;
+		showTableInitData.value = [];
+		showTableDataNew.value = [];
+		CalculationMethodType.value = -1;
 	};
 
 	const handleCloseUse = () => {
