@@ -113,6 +113,7 @@
 	const beInDebtHours = ref<number>(0); // 所欠工时
 	const checkInInputRef = ref<any>(null);
 	const checkOutInputRef = ref<any>(null);
+	const isHaveNewProcessedData = ref<boolean>(false); // 是否有新的处理数据
 
 	// 验证时间格式是否正确
 	const validateTimeFormat = (timeStr: string): boolean => {
@@ -149,12 +150,12 @@
 	watch(
 		[() => props.showTableInitData, () => props.CalculationMethodType, () => props.showTableDataNew],
 		([newData, newType, newProcessedData]) => {
-			console.log('newProcessedData: ', newProcessedData.length);
 			if (newProcessedData.length === 0) {
 				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
 				tableData.value = processedData;
 			} else {
 				tableData.value = [...newProcessedData];
+				isHaveNewProcessedData.value = true;
 			}
 		},
 		{ deep: true, immediate: true },
@@ -167,7 +168,11 @@
 		// 从原始数据中获取真正的原始时间用于恢复
 		const originalCheckInRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '1');
 		const originalCheckInTime = originalCheckInRecord ? originalCheckInRecord.checktime : `${row.dt} 09:00:00`;
-
+		if (isHaveNewProcessedData.value) {
+			ElMessage.error('选择法定节假日后，不能修改上班时间，请重新选择');
+			restoreOriginalTime(row, originalCheckInTime!, true);
+			return;
+		}
 		// 验证时间格式
 		if (!validateTimeFormat(changedCheckInTime)) {
 			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
@@ -217,7 +222,11 @@
 		// 从原始数据中获取真正的原始时间用于恢复
 		const originalCheckOutRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '2');
 		const originalCheckOutTime = originalCheckOutRecord ? originalCheckOutRecord.checktime : `${row.dt} 18:00:00`;
-
+		if (isHaveNewProcessedData.value) {
+			ElMessage.error('选择法定节假日后，不能修改下班时间，请重新选择');
+			restoreOriginalTime(row, originalCheckOutTime!, false);
+			return;
+		}
 		// 验证时间格式
 		if (!validateTimeFormat(changedCheckOutTime)) {
 			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
