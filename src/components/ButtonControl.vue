@@ -146,6 +146,7 @@
 
 <style scoped lang="scss">
 	.btn-container {
+		margin-top: 20px;
 		width: 60%;
 		display: flex;
 		flex-direction: column;

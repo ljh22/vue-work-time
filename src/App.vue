@@ -4,12 +4,16 @@
 			<el-row :gutter="0">
 				<el-col :span="6">
 					<div class="left">
-						<TipsComp @show-to-use="handleShowToUse"></TipsComp>
+						<TipsComp @show-to-use="handleShowToUse" @showTourSecond="handleShowTourSecond"></TipsComp>
 					</div>
 				</el-col>
 				<el-col :span="18">
 					<div class="right">
-						<ModalComp :isShowUse="isShowUse" @close-use="handleCloseUse"></ModalComp>
+						<ModalComp
+							:isShowUse="isShowUse"
+							@close-use="handleCloseUse"
+							:isShowTourSecond="isShowTourSecond"
+						></ModalComp>
 					</div>
 				</el-col>
 			</el-row>
@@ -23,6 +27,7 @@
 	import ModalComp from './components/ModalComp.vue';
 
 	const isShowUse = ref(false);
+	const isShowTourSecond = ref(false);
 
 	// 配置 ElMessage 的最大显示数量
 	const messageConfig = reactive({
@@ -36,6 +41,9 @@
 
 	const handleCloseUse = () => {
 		isShowUse.value = false;
+	};
+	const handleShowTourSecond = () => {
+		isShowTourSecond.value = true;
 	};
 </script>
 

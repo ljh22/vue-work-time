@@ -24,6 +24,8 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTour: typeof import('element-plus/es')['ElTour']
+    ElTourStep: typeof import('element-plus/es')['ElTourStep']
     ModalComp: typeof import('./src/components/ModalComp.vue')['default']
     TableComp: typeof import('./src/components/TableComp.vue')['default']
     TipsComp: typeof import('./src/components/TipsComp.vue')['default']

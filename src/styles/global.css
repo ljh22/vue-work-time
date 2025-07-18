@@ -43,7 +43,7 @@ html.dark {
 	--el-fill-color-dark: #39393a;
 	--el-fill-color-darker: #424243;
 	--el-fill-color-blank: transparent;
-	
+
 	/* 自定义应用变量 */
 	--app-bg-color: #141414;
 	--app-text-color: #e5eaf3;
@@ -62,4 +62,16 @@ body {
 	background-color: var(--app-bg-color);
 	color: var(--app-text-color);
 	min-height: 100vh;
+}
+.step-font {
+	font-size: 16px;
+}
+.el-tour {
+	.el-tour__footer {
+		.el-tour-buttons {
+			.el-button--small:hover {
+				color: #fff;
+			}
+		}
+	}
 }

@@ -211,4 +211,12 @@ const addDate = (date: Date, tableData: TableData[]) => {
 		return calculatedData.sort((a, b) => new Date(a.dt).getTime() - new Date(b.dt).getTime());
 	}
 };
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate };
+/**
+ * 获取组件根DOM的方法
+ * @param compRef  组件引用
+ * @returns  组件根DOM元素
+ */
+const getComponentRoot = (compRef: any) => {
+	return compRef.value?.$el ?? compRef.value;
+};
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot };
