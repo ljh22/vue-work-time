@@ -5,4 +5,5 @@ export interface Utils {
 	updateThemeColor: (newColor: string) => void;
 	firstProcessingTableData: (tableData: TableData[], CalculationMethodType: number) => ProcessedData[];
 	addDate: (date: Date, tableData: TableData[]) => ProcessedData[];
+	getComponentRoot: (compRef: any) => HTMLElement | null;
 }

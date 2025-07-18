@@ -26,6 +26,7 @@
 			</div>
 		</div>
 		<el-input
+			ref="textarea"
 			class="time-textarea"
 			v-model="textareaValue"
 			style="width: 60%"
@@ -36,6 +37,7 @@
 			@focus="handleTextareaFocus"
 		/>
 		<ButtonControl
+			ref="buttonControlRef"
 			@handleShowTable="handleShowTable"
 			@handleChangeTableData="handleChangeTableData"
 			@handleChangeTableDataNew="handleChangeTableDataNew"
@@ -73,6 +75,17 @@
 			<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
 		</div>
 	</div>
+	<el-tour v-model="isShowTourSecond" :close-on-click-modal="true" @close="closeTourSecond">
+		<el-tour-step :target="textareaElement" title="使用指南" placement="bottom">
+			<div class="step-font">这里粘贴打卡JSON数据</div>
+		</el-tour-step>
+		<el-tour-step :target="buttonControlElement" title="提交数据" placement="right">
+			<div class="step-font">点击这里按钮选择处理数据格式以及提交数据，解析打卡记录</div>
+		</el-tour-step>
+		<template #indicators="{ current, total }">
+			<span>{{ current + 1 }} / {{ total }}</span>
+		</template>
+	</el-tour>
 </template>
 <script lang="ts">
 	export default {
@@ -88,9 +101,35 @@
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
 
+	const isShowTourSecond = ref(false);
+	const textarea = ref<HTMLElement | null>(null);
+	const buttonControlRef = ref<HTMLElement | null>(null);
+	const textareaElement = ref<HTMLElement | null>(null);
+	const buttonControlElement = ref<HTMLElement | null>(null);
+
+	onMounted(() => {
+		// 等待DOM更新后获取元素
+		nextTick(() => {
+			// // 获取组件的根DOM元素
+			textareaElement.value = utils.getComponentRoot(textarea);
+			buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+
+			// 延迟100ms确保DOM完全渲染
+			// setTimeout(() => {
+			// open.value = true; // 此时DOM已就绪
+			// }, 800); //处理tip动画之后开始引导
+		});
+	});
+	const closeTourSecond = () => {
+		localStorage.setItem('has_it_been_guided', 'true');
+		// 关闭使用指南第二步
+		isShowTourSecond.value = false;
+	};
+
 	// 定义props
 	const props = defineProps<{
 		isShowUse: boolean;
+		isShowTourSecond: boolean;
 	}>();
 
 	// 定义emits
@@ -152,23 +191,21 @@
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 	// 监听isShowUse变化，自动滚动到使用说明区域
-	watch(
-		() => props.isShowUse,
-		newValue => {
-			if (newValue) {
-				// 使用nextTick确保DOM已更新
-				nextTick(() => {
-					const element = document.querySelector('.how-to-use-box');
-					if (element) {
-						element.scrollIntoView({
-							behavior: 'smooth',
-							block: 'start',
-						});
-					}
-				});
-			}
-		},
-	);
+	watch([() => props.isShowUse, () => props.isShowTourSecond], ([newValue, newValue2]) => {
+		isShowTourSecond.value = newValue2;
+		if (newValue) {
+			// 使用nextTick确保DOM已更新
+			nextTick(() => {
+				const element = document.querySelector('.how-to-use-box');
+				if (element) {
+					element.scrollIntoView({
+						behavior: 'smooth',
+						block: 'start',
+					});
+				}
+			});
+		}
+	});
 
 	// 初始化暗黑模式
 	const initDarkMode = () => {
