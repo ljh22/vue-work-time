@@ -24,6 +24,18 @@
 					</template>
 				</el-switch>
 			</div>
+			<div class="guide-box">
+				<el-tooltip content="重新查看使用引导" placement="left">
+					<el-button
+						type="primary"
+						:icon="QuestionFilled"
+						circle
+						size="default"
+						@click="handleRestartGuide"
+						class="guide-button"
+					/>
+				</el-tooltip>
+			</div>
 		</div>
 		<el-input
 			ref="textarea"
@@ -95,7 +107,7 @@
 
 <script setup lang="ts">
 	import { ref, onMounted, watch, inject, nextTick } from 'vue';
-	import { Moon, Sunny } from '@element-plus/icons-vue';
+	import { Moon, Sunny, QuestionFilled } from '@element-plus/icons-vue';
 	import type { TableData, ProcessedData } from '@/types/TableData';
 	import type { Utils } from '@/types/utils';
 	// 注入全局工具
@@ -121,9 +133,22 @@
 		});
 	});
 	const closeTourSecond = () => {
-		localStorage.setItem('has_it_been_guided', 'true');
 		// 关闭使用指南第二步
 		isShowTourSecond.value = false;
+		// 注意：这里不设置localStorage，允许用户再次查看引导
+	};
+
+	// 重新启动引导
+	const handleRestartGuide = () => {
+		// 先重置右侧引导状态
+		isShowTourSecond.value = false;
+		// 重新获取元素引用，确保DOM已更新
+		nextTick(() => {
+			textareaElement.value = utils.getComponentRoot(textarea);
+			buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+			// 触发父组件重新启动左侧引导
+			emit('restart-guide');
+		});
 	};
 
 	// 定义props
@@ -135,6 +160,7 @@
 	// 定义emits
 	const emit = defineEmits<{
 		'close-use': [];
+		'restart-guide': [];
 	}>();
 
 	// 默认主题色值（对应 $primary-base: #409eff）
@@ -191,21 +217,48 @@
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
 	// 监听isShowUse变化，自动滚动到使用说明区域
-	watch([() => props.isShowUse, () => props.isShowTourSecond], ([newValue, newValue2]) => {
-		isShowTourSecond.value = newValue2;
-		if (newValue) {
-			// 使用nextTick确保DOM已更新
-			nextTick(() => {
-				const element = document.querySelector('.how-to-use-box');
-				if (element) {
-					element.scrollIntoView({
-						behavior: 'smooth',
-						block: 'start',
-					});
-				}
-			});
-		}
-	});
+	watch(
+		() => props.isShowUse,
+		newValue => {
+			if (newValue) {
+				// 使用nextTick确保DOM已更新
+				nextTick(() => {
+					const element = document.querySelector('.how-to-use-box');
+					if (element) {
+						element.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start',
+						});
+					}
+				});
+			}
+		},
+	);
+
+	// 单独监听右侧引导状态变化
+	watch(
+		() => props.isShowTourSecond,
+		(newValue, oldValue) => {
+			// 只在状态从false变为true时处理
+			if (newValue && !oldValue) {
+				// 当右侧引导状态变为true时，重新获取元素引用并启动引导
+				nextTick(() => {
+					textareaElement.value = utils.getComponentRoot(textarea);
+					buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+					// 延迟一点时间确保元素引用已更新，然后再启动引导
+					setTimeout(() => {
+						if (props.isShowTourSecond) {
+							// 确保外部状态仍然是true才启动
+							isShowTourSecond.value = true;
+						}
+					}, 200);
+				});
+			} else if (!newValue) {
+				// 如果外部设置为false，同步内部状态
+				isShowTourSecond.value = false;
+			}
+		},
+	);
 
 	// 初始化暗黑模式
 	const initDarkMode = () => {
@@ -252,6 +305,8 @@
 	// 处理TableComp组件的数据更新事件
 	const handleUpdateTableData = (data: TableData[]) => {
 		showTableInitData.value = data;
+		// 清空已处理的数据，触发重新统计
+		showTableDataNew.value = [];
 	};
 
 	// 组件挂载时初始化主题色和暗黑模式
@@ -278,6 +333,32 @@
 				margin-top: 10px;
 				.dark-text {
 					margin-right: 10px;
+				}
+			}
+			.guide-box {
+				margin-top: 10px;
+				display: flex;
+				justify-content: flex-end;
+				.guide-button {
+					transition: all 0.3s ease;
+					width: 36px;
+					height: 36px;
+					padding: 0;
+					&:hover {
+						transform: scale(1.1);
+						box-shadow: 0px 2px 8px var(--el-color-primary-light-3);
+					}
+					:deep(.el-button--primary) {
+						background-color: var(--el-color-primary) !important;
+						border-color: var(--el-color-primary) !important;
+						&:hover {
+							background-color: var(--el-color-primary) !important;
+							border-color: var(--el-color-primary) !important;
+						}
+					}
+					:deep(.el-icon) {
+						font-size: 20px;
+					}
 				}
 			}
 			:deep(.el-textarea .el-textarea__inner) {

@@ -41,7 +41,9 @@
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkInTime }}</el-text>
-						<el-icon @click="handleShowCheckInTimeEdit(scope.row)"><Edit class="edit-icon" /></el-icon>
+						<el-icon @click="handleShowCheckInTimeEdit(scope.row)">
+							<Edit class="edit-icon" />
+						</el-icon>
 					</div>
 				</template>
 			</el-table-column>
@@ -56,7 +58,9 @@
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkOutTime }}</el-text>
-						<el-icon @click="handleShowCheckOutTimeEdit(scope.row)"><Edit class="edit-icon" /></el-icon>
+						<el-icon @click="handleShowCheckOutTimeEdit(scope.row)">
+							<Edit class="edit-icon" />
+						</el-icon>
 					</div>
 				</template>
 			</el-table-column>
@@ -68,6 +72,14 @@
 					<el-tag type="danger" v-else>
 						{{ customRound(scope.row.beInDebtHours) }}
 					</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column label="操作" width="100" align="center">
+				<template #default="scope">
+					<el-tooltip content="新增一条新的工时" placement="top" v-if="isLastRow(scope.$index)">
+						<el-button type="primary" :icon="Plus" circle size="small" @click="handleAddNewRecord" class="add-button" />
+					</el-tooltip>
+					<span v-else class="empty-operation">--</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -84,10 +96,16 @@
 	import type { VNode } from 'vue';
 	import type { TableColumnCtx } from 'element-plus';
 	import type { Utils } from '@/types/utils';
-	import { Edit } from '@element-plus/icons-vue';
+	import { Edit, Plus } from '@element-plus/icons-vue';
 	import { ElMessage } from 'element-plus';
+	import dayjs from 'dayjs';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
+
+	// 判断是否是最后一行
+	const isLastRow = (index: number): boolean => {
+		return index === tableData.value.length - 1;
+	};
 
 	const props = defineProps({
 		showTableInitData: {
@@ -423,6 +441,114 @@
 			column.width = minWidth;
 		}
 	};
+
+	// 计算下一个工作日的日期
+	// 如果已有数据，基于最后日期计算；否则基于今天计算
+	const calculateNextWorkDay = (baseDate?: string): string => {
+		// 如果有基础日期，使用基础日期；否则使用今天
+		const startDate = baseDate ? dayjs(baseDate) : dayjs();
+		const tomorrow = startDate.add(1, 'day');
+		const dayOfWeek = tomorrow.day(); // 0=周日, 6=周六
+
+		// 如果明天是周六(6)或周日(0)，则跳到下周一
+		let targetDate = tomorrow;
+		if (dayOfWeek === 6) {
+			// 周六，跳到下周一（加2天）
+			targetDate = startDate.add(3, 'day');
+		} else if (dayOfWeek === 0) {
+			// 周日，跳到下周一（加1天）
+			targetDate = startDate.add(2, 'day');
+		}
+
+		return targetDate.format('YYYY-MM-DD');
+	};
+
+	// 获取现有数据的月份（用于跨月检查）
+	const getDataMonth = (): string | null => {
+		if (props.showTableInitData.length === 0) {
+			return null;
+		}
+		// 获取第一条数据的月份
+		const firstDate = props.showTableInitData[0].dt;
+		return dayjs(firstDate).format('YYYY-MM');
+	};
+
+	// 新增工时记录
+	const handleAddNewRecord = () => {
+		if (props.showTableInitData.length === 0) {
+			ElMessage.warning('请先解析数据');
+			return;
+		}
+
+		// 获取现有数据的月份
+		const dataMonth = getDataMonth();
+		if (!dataMonth) {
+			ElMessage.warning('无法获取数据月份');
+			return;
+		}
+
+		// 找到已有数据中的最后日期（去重后排序）
+		const uniqueDates = [...new Set(props.showTableInitData.map(item => item.dt))].sort();
+		const lastDate = uniqueDates[uniqueDates.length - 1];
+
+		// 基于最后日期计算下一个工作日
+		const targetDate = calculateNextWorkDay(lastDate);
+
+		// 检查新增日期是否跨月
+		const targetMonth = dayjs(targetDate).format('YYYY-MM');
+		if (targetMonth !== dataMonth) {
+			ElMessage.error(
+				`新增日期 ${targetDate} 跨月了！只支持当月新增数据，当前数据月份为 ${dataMonth}，无法新增跨月数据`,
+			);
+			return;
+		}
+
+		// 检查该日期是否已存在
+		const dateExists = props.showTableInitData.some(item => item.dt === targetDate);
+		if (dateExists) {
+			ElMessage.warning(`日期 ${targetDate} 已存在，请手动添加其他日期`);
+			return;
+		}
+
+		// 从现有数据中获取员工信息（使用第一条记录的信息）
+		const firstRecord = props.showTableInitData[0];
+		const empName = firstRecord.empName || '';
+		const deptName = firstRecord.deptName || '';
+		const locsetname = firstRecord.locsetname || '';
+		const empId = firstRecord.empId || '';
+		const emp_code = firstRecord.emp_code || firstRecord.empCode || '';
+
+		// 创建上班打卡记录
+		const checkInRecord: TableData = {
+			dt: targetDate,
+			checktime: `${targetDate} 08:00:00`,
+			type: '1',
+			empName: empName,
+			deptName: deptName,
+			locsetname: locsetname,
+			empId: empId,
+			emp_code: emp_code,
+		};
+
+		// 创建下班打卡记录
+		const checkOutRecord: TableData = {
+			dt: targetDate,
+			checktime: `${targetDate} 17:30:00`,
+			type: '2',
+			empName: empName,
+			deptName: deptName,
+			locsetname: locsetname,
+			empId: empId,
+			emp_code: emp_code,
+		};
+
+		// 添加到原始数据中
+		const newTableData = [...props.showTableInitData, checkInRecord, checkOutRecord];
+
+		// 触发更新，重新处理数据
+		emit('update-data', newTableData);
+		ElMessage.success(`已新增 ${targetDate} 的工时记录`);
+	};
 </script>
 
 <style scoped lang="scss">
@@ -430,6 +556,7 @@
 		margin-top: 20px;
 		width: 90%;
 		margin-left: -185px;
+
 		.title-text {
 			display: block;
 			text-align: center;
@@ -437,43 +564,53 @@
 			font-weight: bold;
 			font-size: 16px;
 		}
+
 		.edit-box {
 			padding: 5px;
 			display: flex;
 			align-items: center;
 			justify-content: space-evenly;
+
 			.el-icon {
 				font-size: 17px;
 			}
+
 			.edit-icon {
 				color: rgb(110, 108, 108);
 			}
 		}
+
 		:deep(.el-table) {
 			width: 100%;
 			color: #000;
+
 			.el-table__inner-wrapper {
 				.el-table__body-wrapper {
 					.el-table__body {
 						tbody {
 							.el-table__row--striped .el-table__cell {
 								background: color-mix(in srgb, var(--el-color-primary) 40%, white 30%);
+
 								&:first-child {
 									border-top-left-radius: 10px;
 									border-bottom-left-radius: 10px;
 								}
+
 								&:last-child {
 									border-top-right-radius: 10px;
 									border-bottom-right-radius: 10px;
 								}
 							}
+
 							.current-row .el-table__cell {
 								background: #ced6e0 !important;
 								border-right-color: #ced6e0;
+
 								&:first-child {
 									border-top-left-radius: 10px;
 									border-bottom-left-radius: 10px;
 								}
+
 								&:last-child {
 									border-top-right-radius: 10px;
 									border-bottom-right-radius: 10px;
@@ -484,8 +621,10 @@
 				}
 			}
 		}
+
 		.dark & :deep(.el-table) {
 			color: #fff;
+
 			.el-table__inner-wrapper {
 				.el-table__body-wrapper {
 					.el-table__body {
@@ -493,9 +632,11 @@
 							.el-table__row--striped .el-table__cell {
 								color: #000;
 								background: color-mix(in srgb, var(--el-color-primary) 70%, white 30%);
+
 								.el-text {
 									color: #000;
 								}
+
 								.el-input {
 									.el-input__wrapper {
 										padding: 0;
@@ -506,6 +647,34 @@
 					}
 				}
 			}
+		}
+
+		.add-button {
+			// transition: all 0.3s ease;
+			&:hover {
+				// transform: scale(1.1);
+				box-shadow: 0px 2px 8px var(--el-color-primary);
+			}
+		}
+
+		:deep(.el-button) {
+			background-color: var(--el-color-primary) !important;
+			border-color: var(--el-color-primary) !important;
+
+			&:hover {
+				background-color: var(--el-color-primary) !important;
+				border-color: var(--el-color-primary) !important;
+			}
+
+			&:active {
+				background-color: var(--el-color-primary) !important;
+				border-color: var(--el-color-primary) !important;
+			}
+		}
+
+		.empty-operation {
+			color: #909399;
+			font-size: 14px;
 		}
 	}
 </style>
