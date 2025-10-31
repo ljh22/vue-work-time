@@ -4,7 +4,11 @@
 			<el-row :gutter="0">
 				<el-col :span="6">
 					<div class="left">
-						<TipsComp @show-to-use="handleShowToUse" @showTourSecond="handleShowTourSecond"></TipsComp>
+						<TipsComp
+							ref="tipsCompRef"
+							@show-to-use="handleShowToUse"
+							@showTourSecond="handleShowTourSecond"
+						></TipsComp>
 					</div>
 				</el-col>
 				<el-col :span="18">
@@ -13,6 +17,7 @@
 							:isShowUse="isShowUse"
 							@close-use="handleCloseUse"
 							:isShowTourSecond="isShowTourSecond"
+							@restart-guide="handleRestartGuide"
 						></ModalComp>
 					</div>
 				</el-col>
@@ -28,6 +33,7 @@
 
 	const isShowUse = ref(false);
 	const isShowTourSecond = ref(false);
+	const tipsCompRef = ref<InstanceType<typeof TipsComp> | null>(null);
 
 	// 配置 ElMessage 的最大显示数量
 	const messageConfig = reactive({
@@ -44,6 +50,15 @@
 	};
 	const handleShowTourSecond = () => {
 		isShowTourSecond.value = true;
+	};
+
+	const handleRestartGuide = () => {
+		// 先重置右侧引导状态，确保每次都能触发
+		isShowTourSecond.value = false;
+		// 重新启动左侧引导
+		if (tipsCompRef.value) {
+			tipsCompRef.value.restartTour();
+		}
 	};
 </script>
 

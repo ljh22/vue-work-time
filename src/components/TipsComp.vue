@@ -59,6 +59,7 @@
 	}>();
 
 	const open = ref(false);
+
 	const cardHeader1 = ref<HTMLElement | null>(null);
 	const cardContent = ref<HTMLElement | null>(null);
 	const cardContent2 = ref<HTMLElement | null>(null);
@@ -66,6 +67,26 @@
 	const cardHeaderElement = ref<HTMLElement | null>(null);
 	const cardContentElement = ref<HTMLElement | null>(null);
 	const cardContentElement2 = ref<HTMLElement | null>(null);
+
+	// 重新启动引导的方法
+	const restartTour = () => {
+		// 重新获取元素引用
+		nextTick(() => {
+			cardHeaderElement.value = cardHeader1.value;
+			cardContentElement.value = utils.getComponentRoot(cardContent);
+			cardContentElement2.value = utils.getComponentRoot(cardContent2);
+
+			// 延迟一点时间确保DOM完全渲染
+			setTimeout(() => {
+				open.value = true; // 重新启动引导
+			}, 300);
+		});
+	};
+
+	// 暴露方法供父组件调用
+	defineExpose({
+		restartTour,
+	});
 
 	onMounted(() => {
 		// 等待DOM更新后获取元素
@@ -86,7 +107,7 @@
 		});
 	});
 	const closeTourFirst = () => {
-		localStorage.setItem('tourFirst', 'true');
+		// 触发右侧引导
 		emit('showTourSecond');
 		open.value = false;
 	};
