@@ -27,6 +27,7 @@
 			<div class="guide-box">
 				<el-tooltip content="重新查看使用引导" placement="left">
 					<el-button
+						ref="guideButtonRef"
 						type="primary"
 						:icon="QuestionFilled"
 						circle
@@ -94,6 +95,9 @@
 		<el-tour-step :target="buttonControlElement" title="提交数据" placement="right">
 			<div class="step-font">点击这里按钮选择处理数据格式以及提交数据，解析打卡记录</div>
 		</el-tour-step>
+		<el-tour-step :target="guideButtonElement" title="再次查看" placement="left">
+			<div class="step-font">点击这里重新查看引导步骤</div>
+		</el-tour-step>
 		<template #indicators="{ current, total }">
 			<span>{{ current + 1 }} / {{ total }}</span>
 		</template>
@@ -116,8 +120,10 @@
 	const isShowTourSecond = ref(false);
 	const textarea = ref<HTMLElement | null>(null);
 	const buttonControlRef = ref<HTMLElement | null>(null);
+	const guideButtonRef = ref<HTMLElement | null>(null);
 	const textareaElement = ref<HTMLElement | null>(null);
 	const buttonControlElement = ref<HTMLElement | null>(null);
+	const guideButtonElement = ref<HTMLElement | null>(null);
 
 	onMounted(() => {
 		// 等待DOM更新后获取元素
@@ -125,6 +131,7 @@
 			// // 获取组件的根DOM元素
 			textareaElement.value = utils.getComponentRoot(textarea);
 			buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+			guideButtonElement.value = utils.getComponentRoot(guideButtonRef);
 
 			// 延迟100ms确保DOM完全渲染
 			// setTimeout(() => {
@@ -146,6 +153,7 @@
 		nextTick(() => {
 			textareaElement.value = utils.getComponentRoot(textarea);
 			buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+			guideButtonElement.value = utils.getComponentRoot(guideButtonRef);
 			// 触发父组件重新启动左侧引导
 			emit('restart-guide');
 		});
@@ -245,6 +253,7 @@
 				nextTick(() => {
 					textareaElement.value = utils.getComponentRoot(textarea);
 					buttonControlElement.value = utils.getComponentRoot(buttonControlRef);
+					guideButtonElement.value = utils.getComponentRoot(guideButtonRef);
 					// 延迟一点时间确保元素引用已更新，然后再启动引导
 					setTimeout(() => {
 						if (props.isShowTourSecond) {
