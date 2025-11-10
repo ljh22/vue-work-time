@@ -1,0 +1,39 @@
+{
+  "name": "工时计算工具",
+  "description": "工时解析工具的 Chrome 浏览器扩展。",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "工时工具",
+    "default_icon": {
+      "16": "workTime.png",
+      "32": "workTime.png",
+      "48": "workTime.png",
+      "128": "workTime.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["tabs"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "workTime.png",
+    "32": "workTime.png",
+    "48": "workTime.png",
+    "128": "workTime.png"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": ["<all_urls>"],
+      "resources": ["workTime.png"]
+    }
+  ]
+}

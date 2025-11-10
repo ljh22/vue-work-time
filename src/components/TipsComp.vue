@@ -107,6 +107,7 @@
 		});
 	});
 	const closeTourFirst = () => {
+		localStorage.setItem('has_it_been_guided', 'true');
 		// 触发右侧引导
 		emit('showTourSecond');
 		open.value = false;
