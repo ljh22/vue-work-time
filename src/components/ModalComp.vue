@@ -201,6 +201,10 @@
 	const CalculationMethodType = ref<number>(-1);
 
 	const handleChangeTextarea = (value: string) => {
+		// 如果输入的内容是"items":开头的数据，把"items":也去除
+		if (value.startsWith('"items":')) {
+			value = value.replace(/^"items":\s*/, '');
+		}
 		// 处理输入框内容变化
 		if (value.slice(-1) == ',') {
 			tableInitData.value = JSON.parse(value.slice(0, -1));
