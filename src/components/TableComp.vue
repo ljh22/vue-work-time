@@ -38,6 +38,7 @@
 						ref="checkInInputRef"
 						v-if="scope.row.isShowCheckInEdit"
 						@blur="handleCheckInBlur(scope.row)"
+						@keydown.enter="handleCheckInEnter(scope.row, $event)"
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkInTime }}</el-text>
@@ -55,6 +56,7 @@
 						ref="checkOutInputRef"
 						v-if="scope.row.isShowCheckOutEdit"
 						@blur="handleCheckOutBlur(scope.row)"
+						@keydown.enter="handleCheckOutEnter(scope.row, $event)"
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkOutTime }}</el-text>
@@ -303,6 +305,20 @@
 
 		// 向父组件发射更新事件，避免重复调用firstProcessingTableData
 		emit('update-data', tempTableData);
+	};
+
+	const handleCheckInEnter = (_row: ProcessedData, event: KeyboardEvent) => {
+		const target = event.target as HTMLElement | null;
+		if (target && typeof target.blur === 'function') {
+			target.blur();
+		}
+	};
+
+	const handleCheckOutEnter = (_row: ProcessedData, event: KeyboardEvent) => {
+		const target = event.target as HTMLElement | null;
+		if (target && typeof target.blur === 'function') {
+			target.blur();
+		}
 	};
 
 	// 显示上班时间编辑框
