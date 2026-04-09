@@ -159,6 +159,12 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 	// console.log('处理后的数据: ', processedData);
 	return processedData;
 };
+/**
+ * 添加指定日期的打卡记录
+ * @param date 指定日期
+ * @param tableData 表格数据
+ * @returns
+ */
 const addDate = (date: Date, tableData: TableData[]) => {
 	const chooseDate = dayjs(date).format('YYYY-MM-DD');
 	// 把tableData中符合chooseDate的按日期分组
