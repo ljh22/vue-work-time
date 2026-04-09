@@ -298,6 +298,22 @@
 	// 处理ButtonControl组件的提交完成事件
 	const handleShowTable = (show: boolean) => {
 		isShowTable.value = show;
+		if (show) {
+			nextTick(() => {
+				setTimeout(() => {
+					const root = buttonControlElement.value ?? utils.getComponentRoot(buttonControlRef);
+					if (root instanceof HTMLElement) {
+						const submitButton = root.querySelector('.submit') as HTMLElement | null;
+						if (submitButton) {
+							submitButton.scrollIntoView({
+								behavior: 'smooth',
+								block: 'start',
+							});
+						}
+					}
+				}, 100);
+			});
+		}
 	};
 
 	const handleChangeColor = (value: string) => {
