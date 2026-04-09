@@ -10,6 +10,7 @@ export interface TableData {
 	locsetname?: string;
 	empCode?: string;
 	empName: string;
+	isNewlyAdded?: boolean; // 标识是否为新增的记录
 }
 export interface ProcessedData {
 	dt: string;
@@ -20,4 +21,5 @@ export interface ProcessedData {
 	checkOutTime: string;
 	isShowCheckInEdit: boolean;
 	isShowCheckOutEdit: boolean;
+	isNewlyAdded?: boolean; // 标识是否为新增的行
 }

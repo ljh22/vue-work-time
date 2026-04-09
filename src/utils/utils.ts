@@ -71,13 +71,16 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 	console.log('原始数据: ', tableData);
 
 	// 按日期分组打卡记录
-	const groupedByDate = tableData.reduce((acc, record) => {
-		if (!acc[record.dt]) {
-			acc[record.dt] = [];
-		}
-		acc[record.dt].push(record);
-		return acc;
-	}, {} as Record<string, TableData[]>);
+	const groupedByDate = tableData.reduce(
+		(acc, record) => {
+			if (!acc[record.dt]) {
+				acc[record.dt] = [];
+			}
+			acc[record.dt].push(record);
+			return acc;
+		},
+		{} as Record<string, TableData[]>,
+	);
 
 	// 检查每个日期是否缺少下班打卡记录，如果缺少则添加虚拟下班打卡
 	Object.keys(groupedByDate).forEach(date => {
@@ -139,6 +142,7 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 			checkOutTime: clockOutRecord?.checktime || '未打卡',
 			isShowCheckInEdit: false,
 			isShowCheckOutEdit: false,
+			isNewlyAdded: clockInRecord?.isNewlyAdded || clockOutRecord?.isNewlyAdded || false,
 		};
 	});
 	// 只显示周一到周五的数据
@@ -158,16 +162,19 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 const addDate = (date: Date, tableData: TableData[]) => {
 	const chooseDate = dayjs(date).format('YYYY-MM-DD');
 	// 把tableData中符合chooseDate的按日期分组
-	const groupedByDate = tableData.reduce((acc, record) => {
-		// 只处理与选择日期相同的记录
-		if (record.dt === chooseDate) {
-			if (!acc[record.dt]) {
-				acc[record.dt] = [];
+	const groupedByDate = tableData.reduce(
+		(acc, record) => {
+			// 只处理与选择日期相同的记录
+			if (record.dt === chooseDate) {
+				if (!acc[record.dt]) {
+					acc[record.dt] = [];
+				}
+				acc[record.dt].push(record);
 			}
-			acc[record.dt].push(record);
-		}
-		return acc;
-	}, {} as Record<string, TableData[]>);
+			return acc;
+		},
+		{} as Record<string, TableData[]>,
+	);
 	// 将分组后的数据转换为指定格式的对象
 	if (Object.keys(groupedByDate).length > 0) {
 		const dayRecords = groupedByDate[chooseDate];

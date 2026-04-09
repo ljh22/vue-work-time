@@ -76,9 +76,28 @@
 			</el-table-column>
 			<el-table-column label="操作" width="100" align="center">
 				<template #default="scope">
-					<el-tooltip content="新增一条新的工时" placement="top" v-if="isLastRow(scope.$index)">
-						<el-button type="primary" :icon="Plus" circle size="small" @click="handleAddNewRecord" class="add-button" />
-					</el-tooltip>
+					<div v-if="isLastRow(scope.$index)" class="operation-buttons">
+						<el-tooltip content="新增一条新的工时" placement="top">
+							<el-button
+								type="primary"
+								:icon="Plus"
+								circle
+								size="small"
+								@click="handleAddNewRecord"
+								class="add-button"
+							/>
+						</el-tooltip>
+						<el-tooltip content="删除这条工时记录" placement="top" v-if="scope.row.isNewlyAdded">
+							<el-button
+								type="danger"
+								:icon="Minus"
+								circle
+								size="small"
+								@click="handleDeleteRecord(scope.row)"
+								class="delete-button"
+							/>
+						</el-tooltip>
+					</div>
 					<span v-else class="empty-operation">--</span>
 				</template>
 			</el-table-column>
@@ -96,7 +115,7 @@
 	import type { VNode } from 'vue';
 	import type { TableColumnCtx } from 'element-plus';
 	import type { Utils } from '@/types/utils';
-	import { Edit, Plus } from '@element-plus/icons-vue';
+	import { Edit, Plus, Minus } from '@element-plus/icons-vue';
 	import { ElMessage } from 'element-plus';
 	import dayjs from 'dayjs';
 	// 注入全局工具
@@ -473,6 +492,16 @@
 		return dayjs(firstDate).format('YYYY-MM');
 	};
 
+	// 删除工时记录
+	const handleDeleteRecord = (row: ProcessedData) => {
+		// 从原始数据中移除该日期的所有记录
+		const newTableData = props.showTableInitData.filter(item => item.dt !== row.dt);
+
+		// 触发更新，重新处理数据
+		emit('update-data', newTableData);
+		ElMessage.success(`已删除 ${row.dt} 的工时记录`);
+	};
+
 	// 新增工时记录
 	const handleAddNewRecord = () => {
 		if (props.showTableInitData.length === 0) {
@@ -528,6 +557,7 @@
 			locsetname: locsetname,
 			empId: empId,
 			emp_code: emp_code,
+			isNewlyAdded: true,
 		};
 
 		// 创建下班打卡记录
@@ -540,6 +570,7 @@
 			locsetname: locsetname,
 			empId: empId,
 			emp_code: emp_code,
+			isNewlyAdded: true,
 		};
 
 		// 添加到原始数据中
@@ -655,6 +686,19 @@
 				// transform: scale(1.1);
 				box-shadow: 0px 2px 8px var(--el-color-primary);
 			}
+		}
+
+		.delete-button {
+			&:hover {
+				box-shadow: 0px 2px 8px var(--el-color-danger);
+			}
+		}
+
+		.operation-buttons {
+			display: flex;
+			gap: 8px;
+			justify-content: center;
+			align-items: center;
 		}
 
 		:deep(.el-button) {
