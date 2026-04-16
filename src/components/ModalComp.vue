@@ -201,9 +201,9 @@
 	const CalculationMethodType = ref<number>(-1);
 
 	const handleChangeTextarea = (value: string) => {
-		// 如果输入的内容是"items":开头的数据，把"items":也去除
-		if (value.startsWith('"items":')) {
-			value = value.replace(/^"items":\s*/, '');
+		// 如果输入的内容是"items":开头的数据，把"items":也去除(匹配前面任意个空格)
+		if (/^\s*"items":/.test(value)) {
+			value = value.replace(/^\s*"items":\s*/, '');
 		}
 		// 处理输入框内容变化
 		if (value.slice(-1) == ',') {
