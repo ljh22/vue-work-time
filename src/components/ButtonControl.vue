@@ -5,7 +5,9 @@
 			<el-button type="primary" size="large" @click="chooseCalculationMethod(2)">单独计算周末工时</el-button>
 		</div>
 		<div class="year-box" v-if="CalculationMethodType !== -1">
-			<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
+			<el-tooltip content="当月存在国家法定节假日上班调休时，请选择调休日期" placement="top">
+				<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
+			</el-tooltip>
 			<div class="calendar-box">
 				<el-date-picker
 					ref="datePickerRef"

@@ -486,6 +486,7 @@
 			img {
 				border: 1px solid #ccc;
 				margin-bottom: 10px;
+				width: 90%;
 			}
 
 			.close-button-container {
