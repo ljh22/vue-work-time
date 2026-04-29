@@ -63,7 +63,8 @@
 			:CalculationMethodType="CalculationMethodType"
 			@update-data="handleUpdateTableData"
 		></TableComp>
-		<div class="how-to-use-box" v-if="props.isShowUse">
+		<Transition name="slide-fade">
+			<div class="how-to-use-box" v-if="props.isShowUse">
 			<div class="close-button-container">
 				<el-button type="primary" size="small" @click="handleCloseUse" class="close-button"> 关闭 </el-button>
 			</div>
@@ -87,6 +88,7 @@
 			<img src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png" alt="" loading="lazy" />
 			<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
 		</div>
+		</Transition>
 	</div>
 	<el-tour v-model="isShowTourSecond" :close-on-click-modal="true" @close="closeTourSecond">
 		<el-tour-step :target="textareaElement" title="使用指南" placement="bottom">
@@ -228,6 +230,35 @@
 	// 从localStorage读取暗黑模式状态，默认为false
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
+	// 平滑滚动到指定元素
+	const smoothScrollToElement = (element: Element) => {
+		// 计算元素相对于文档顶部的位置
+		const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+		const startPosition = window.scrollY;
+		const distance = elementPosition - startPosition;
+		const duration = 600; // 滚动持续时间
+		const startTime = performance.now();
+
+		const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+		const animate = (currentTime: number) => {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const easeProgress = easeOutCubic(progress);
+
+			window.scrollTo({
+				top: startPosition + distance * easeProgress,
+				left: 0,
+			});
+
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			}
+		};
+
+		requestAnimationFrame(animate);
+	};
+
 	// 监听isShowUse变化，自动滚动到使用说明区域
 	watch(
 		() => props.isShowUse,
@@ -237,10 +268,7 @@
 				nextTick(() => {
 					const element = document.querySelector('.how-to-use-box');
 					if (element) {
-						element.scrollIntoView({
-							behavior: 'smooth',
-							block: 'start',
-						});
+						smoothScrollToElement(element);
 					}
 				});
 			}
@@ -347,6 +375,34 @@
 </script>
 
 <style scoped lang="scss">
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.slide-fade-enter-active {
+		transition: opacity 0.5s ease-out;
+	}
+
+	.slide-fade-leave-active {
+		transition: all 0.4s ease-in;
+	}
+
+	.slide-fade-enter-from {
+		opacity: 0;
+	}
+
+	.slide-fade-leave-to {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
 	.modal-container {
 		position: relative;
 		.theme-box {
@@ -487,6 +543,7 @@
 				border: 1px solid #ccc;
 				margin-bottom: 10px;
 				width: 90%;
+				animation: fadeInUp 0.6s ease-out;
 			}
 
 			.close-button-container {
