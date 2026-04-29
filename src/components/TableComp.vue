@@ -118,7 +118,7 @@
 	import type { TableColumnCtx } from 'element-plus';
 	import type { Utils } from '@/types/utils';
 	import { Edit, Plus, Minus } from '@element-plus/icons-vue';
-	import { ElMessage } from 'element-plus';
+	import { ElMessage, ElTooltip } from 'element-plus';
 	import dayjs from 'dayjs';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
@@ -403,10 +403,24 @@
 							if (!isNaN(value)) return prev + curr;
 							else return prev;
 						}, 0);
-						sums[index] = h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [
-							`${customRound(totalHours)} 小时`,
-						]);
-						beInDebtHours.value = Number(customRound(totalHours));
+
+						const roundedValue = customRound(totalHours);
+						const displayText = `${roundedValue} 小时`;
+
+						// 使用 el-tooltip 包裹显示内容
+						sums[index] = h(
+							ElTooltip,
+							{
+								content: '负数代表工时超出，正数代表欠工时',
+								placement: 'top',
+								effect: 'light',
+							},
+							{
+								default: () => h('div', { style: { textAlign: 'center', fontWeight: 'bold' } }, [displayText]),
+							},
+						);
+
+						beInDebtHours.value = Number(roundedValue);
 					}
 					break;
 				default:
