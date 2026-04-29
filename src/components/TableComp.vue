@@ -42,9 +42,11 @@
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkInTime }}</el-text>
-						<el-icon @click="handleShowCheckInTimeEdit(scope.row)">
-							<Edit class="edit-icon" />
-						</el-icon>
+						<el-tooltip content="编辑上班打卡时间" placement="top">
+							<el-icon @click="handleShowCheckInTimeEdit(scope.row)">
+								<Edit class="edit-icon" />
+							</el-icon>
+						</el-tooltip>
 					</div>
 				</template>
 			</el-table-column>
@@ -60,9 +62,11 @@
 					></el-input>
 					<div class="edit-box" v-else>
 						<el-text>{{ scope.row.checkOutTime }}</el-text>
-						<el-icon @click="handleShowCheckOutTimeEdit(scope.row)">
-							<Edit class="edit-icon" />
-						</el-icon>
+						<el-tooltip content="编辑下班打卡时间" placement="top">
+							<el-icon @click="handleShowCheckOutTimeEdit(scope.row)">
+								<Edit class="edit-icon" />
+							</el-icon>
+						</el-tooltip>
 					</div>
 				</template>
 			</el-table-column>
