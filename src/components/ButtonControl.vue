@@ -108,6 +108,14 @@
 
 		const newTableData = utils.addDate(val, props.tableInitData);
 		emit('handleChangeTableDataNew', newTableData, CalculationMethodType.value);
+		// 同时更新原始数据，将选择的法定节假日记录添加进去
+		const holidayRecords = props.tableInitData.filter(item => item.dt === selectedDateStr);
+		const updatedTableInitData = [...props.tableInitData];
+		// 标记这些记录为法定节假日
+		holidayRecords.forEach(record => {
+			record.isHoliday = true;
+		});
+		emit('handleChangeTableData', updatedTableInitData, CalculationMethodType.value);
 		ElMessage.success('日期已添加到表格数据中');
 	};
 	// 当日期面板改变时触发，比如头部的选择年、月

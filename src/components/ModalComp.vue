@@ -362,8 +362,7 @@
 	// 处理TableComp组件的数据更新事件
 	const handleUpdateTableData = (data: TableData[]) => {
 		showTableInitData.value = data;
-		// 清空已处理的数据，触发重新统计
-		showTableDataNew.value = [];
+		// 保留已处理的数据（法定节假日），不清空
 	};
 
 	// 组件挂载时初始化主题色和暗黑模式

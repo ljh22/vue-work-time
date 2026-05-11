@@ -133,6 +133,9 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 		}
 		beInDebtHours = 8 - workHours;
 
+		// 检查是否有任何记录被标记为法定节假日
+		const isHoliday = dayRecords.some(record => record.isHoliday);
+
 		return {
 			dt: date,
 			validHours: workHours,
@@ -143,13 +146,16 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 			isShowCheckInEdit: false,
 			isShowCheckOutEdit: false,
 			isNewlyAdded: clockInRecord?.isNewlyAdded || clockOutRecord?.isNewlyAdded || false,
+			isHoliday,
 		};
 	});
-	// 只显示周一到周五的数据
+	// 过滤数据：保留选择的计算类型对应的日期，以及标记为法定节假日的日期
 	const isWeekend = (date: Date) => date.getDay() === 0 || date.getDay() === 6;
 	processedData = processedData.filter(item => {
 		const date = dayjs(item.dt).toDate();
-		return CalculationMethodType === 1 ? !isWeekend(date) : isWeekend(date);
+		const isSelectedType = CalculationMethodType === 1 ? !isWeekend(date) : isWeekend(date);
+		// 保留选择类型的日期，或者标记为法定节假日的日期
+		return isSelectedType || item.isHoliday;
 	});
 
 	// 按日期排序

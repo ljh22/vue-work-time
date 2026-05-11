@@ -157,6 +157,7 @@
 	const checkInInputRef = ref<any>(null);
 	const checkOutInputRef = ref<any>(null);
 	const isHaveNewProcessedData = ref<boolean>(false); // 是否有新的处理数据
+	const fullTableData = ref<TableData[]>([]); // 保存完整数据（包括添加的法定节假日）
 
 	// 验证时间格式是否正确
 	const validateTimeFormat = (timeStr: string): boolean => {
@@ -191,15 +192,13 @@
 	};
 
 	watch(
-		[() => props.showTableInitData, () => props.CalculationMethodType, () => props.showTableDataNew],
-		([newData, newType, newProcessedData]) => {
-			if (newProcessedData.length === 0) {
-				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
-				tableData.value = processedData;
-			} else {
-				tableData.value = [...newProcessedData];
-				isHaveNewProcessedData.value = true;
-			}
+		[() => props.showTableInitData, () => props.CalculationMethodType],
+		([newData, newType]) => {
+			// 始终根据原始数据重新计算，确保编辑后的数据能正确更新
+			const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
+			tableData.value = processedData;
+			fullTableData.value = [...newData];
+			isHaveNewProcessedData.value = props.showTableDataNew.length > 0;
 		},
 		{ deep: true, immediate: true },
 	);
@@ -211,11 +210,6 @@
 		// 从原始数据中获取真正的原始时间用于恢复
 		const originalCheckInRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '1');
 		const originalCheckInTime = originalCheckInRecord ? originalCheckInRecord.checktime : `${row.dt} 09:00:00`;
-		if (isHaveNewProcessedData.value) {
-			ElMessage.error('选择法定节假日后，不能修改上班时间，请重新选择');
-			restoreOriginalTime(row, originalCheckInTime!, true);
-			return;
-		}
 		// 验证时间格式
 		if (!validateTimeFormat(changedCheckInTime)) {
 			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
@@ -253,7 +247,7 @@
 			tempTableData[index].checktime = changedCheckInTime;
 		}
 
-		// 向父组件发射更新事件，避免重复调用firstProcessingTableData
+		// 向父组件发射更新事件，watch会自动重新计算数据
 		emit('update-data', tempTableData);
 	};
 
@@ -265,11 +259,6 @@
 		// 从原始数据中获取真正的原始时间用于恢复
 		const originalCheckOutRecord = props.showTableInitData.find(item => item.dt === row.dt && item.type === '2');
 		const originalCheckOutTime = originalCheckOutRecord ? originalCheckOutRecord.checktime : `${row.dt} 18:00:00`;
-		if (isHaveNewProcessedData.value) {
-			ElMessage.error('选择法定节假日后，不能修改下班时间，请重新选择');
-			restoreOriginalTime(row, originalCheckOutTime!, false);
-			return;
-		}
 		// 验证时间格式
 		if (!validateTimeFormat(changedCheckOutTime)) {
 			ElMessage.error('时间格式不正确，请输入正确的时间格式（HH:MM:SS）');
@@ -307,7 +296,7 @@
 			tempTableData[index].checktime = changedCheckOutTime;
 		}
 
-		// 向父组件发射更新事件，避免重复调用firstProcessingTableData
+		// 向父组件发射更新事件，watch会自动重新计算数据
 		emit('update-data', tempTableData);
 	};
 
