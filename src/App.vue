@@ -6,16 +6,8 @@
 				<p>最新版本: {{ newVersion }}</p>
 				<div class="contact">
 					请自行
-					<div>
-						<el-link
-							type="primary"
-							:underline="false"
-							href="https://gitee.com/ljh-project/vue-work-time/issues"
-							target="_blank"
-							>下载</el-link
-						>
-					</div>
-					获取最新版本
+					<el-link type="primary" :underline="false" @click="handleDownload">下载</el-link>
+					获取最新版本，解压后添加到浏览器插件
 				</div>
 				<el-button type="primary" @click="newVersion = ''">我知道了</el-button>
 			</div>
@@ -80,6 +72,26 @@
 		// 重新启动左侧引导
 		if (tipsCompRef.value) {
 			tipsCompRef.value.restartTour();
+		}
+	};
+
+	// 下载最新版本
+	const handleDownload = async () => {
+		try {
+			const response = await fetch('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip');
+			if (!response.ok) throw new Error('下载失败');
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'dist.zip';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			// 如果直接下载失败，回退到打开页面
+			window.open('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip', '_blank');
 		}
 	};
 
