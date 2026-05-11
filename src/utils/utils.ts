@@ -2,6 +2,57 @@ import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
 import type { TableData, ProcessedData } from '@/types/TableData';
 let calculatedData: ProcessedData[] = [];
+
+// Gitee 仓库的 raw 文件地址
+const VERSION_URL = 'https://gitee.com/ljh-project/vue-work-time/raw/master/public/version.json';
+
+/**
+ * 获取远程版本号
+ * @returns Promise<string | null> 远程版本号，获取失败返回 null
+ */
+const getRemoteVersion = async (): Promise<string | null> => {
+	// 开发环境下跳过版本检查（避免 CORS 问题）
+	if (import.meta.env.DEV) {
+		return null;
+	}
+	try {
+		const response = await fetch(VERSION_URL, {
+			method: 'GET',
+			cache: 'no-cache',
+		});
+		if (!response.ok) {
+			return null;
+		}
+		const data = await response.json();
+		return data.version || null;
+	} catch (error) {
+		console.error('获取远程版本失败:', error);
+		return null;
+	}
+};
+
+/**
+ * 检查插件版本是否需要更新（异步远程检查）
+ * @returns Promise<{ needUpdate: boolean; remoteVersion: string | null }>
+ */
+const checkVersionUpdate = async (): Promise<{
+	needUpdate: boolean;
+	remoteVersion: string | null;
+}> => {
+	const remoteVersion = await getRemoteVersion();
+	if (!remoteVersion) {
+		return { needUpdate: false, remoteVersion };
+	}
+
+	const storedVersion = localStorage.getItem('pluginVersion');
+	const needUpdate = storedVersion !== remoteVersion;
+
+	if (needUpdate) {
+		localStorage.setItem('pluginVersion', remoteVersion);
+	}
+
+	return { needUpdate, remoteVersion };
+};
 /**
  * 判断选择月份是否超过当前月份
  * @param selectMonth 选择月份
@@ -238,4 +289,4 @@ const addDate = (date: Date, tableData: TableData[]) => {
 const getComponentRoot = (compRef: any) => {
 	return compRef.value?.$el ?? compRef.value;
 };
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot };
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getRemoteVersion };
