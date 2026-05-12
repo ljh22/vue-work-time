@@ -4,7 +4,7 @@ import type { TableData, ProcessedData } from '@/types/TableData';
 let calculatedData: ProcessedData[] = [];
 
 // Gitee 仓库的 raw 文件地址
-const VERSION_URL = 'https://gitee.com/ljh-project/vue-work-time/raw/master/public/version.json';
+const VERSION_URL = 'https://api.jsonsilo.com/public/5d23800a-41c3-468b-9922-429ce6a96ced';
 
 /**
  * 获取远程版本号
