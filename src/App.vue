@@ -9,7 +9,7 @@
 					<el-link type="primary" :underline="false" @click="handleDownload">下载</el-link>
 					获取最新版本，解压后添加到浏览器插件
 				</div>
-				<el-button type="primary" @click="newVersion = ''">我知道了</el-button>
+				<el-button type="primary" @click="handleConfirmVersion">我知道了</el-button>
 			</div>
 		</div>
 		<div class="container">
@@ -102,6 +102,14 @@
 			newVersion.value = result.remoteVersion || '';
 		}
 	});
+
+	// 用户确认版本更新
+	const handleConfirmVersion = () => {
+		if (newVersion.value) {
+			utils.confirmVersion(newVersion.value);
+		}
+		newVersion.value = '';
+	};
 </script>
 
 <style scoped lang="scss">

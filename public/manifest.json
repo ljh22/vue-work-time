@@ -1,7 +1,7 @@
 {
   "name": "工时计算工具",
   "description": "工时解析工具的 Chrome 浏览器扩展。",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "manifest_version": 3,
   "action": {
     "default_title": "工时工具",

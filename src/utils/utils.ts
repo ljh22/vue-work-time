@@ -47,11 +47,15 @@ const checkVersionUpdate = async (): Promise<{
 	const storedVersion = localStorage.getItem('pluginVersion');
 	const needUpdate = storedVersion !== remoteVersion;
 
-	if (needUpdate) {
-		localStorage.setItem('pluginVersion', remoteVersion);
-	}
-
 	return { needUpdate, remoteVersion };
+};
+
+/**
+ * 标记用户已确认当前版本
+ * @param version 需要确认的版本号
+ */
+const confirmVersion = (version: string): void => {
+	localStorage.setItem('pluginVersion', version);
 };
 /**
  * 判断选择月份是否超过当前月份
@@ -289,4 +293,4 @@ const addDate = (date: Date, tableData: TableData[]) => {
 const getComponentRoot = (compRef: any) => {
 	return compRef.value?.$el ?? compRef.value;
 };
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getRemoteVersion };
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getRemoteVersion, confirmVersion };
