@@ -6,7 +6,7 @@
 				<p>最新版本: {{ newVersion }}</p>
 				<div class="contact">
 					请自行
-					<el-link type="primary" :underline="false" @click="handleDownload">下载</el-link>
+					<el-link type="primary" :underline="false" :disabled="downloadDisabled" :loading="downloadLoading" @click="handleDownload">下载</el-link>
 					获取最新版本，解压后添加到浏览器插件
 				</div>
 				<el-button type="primary" @click="handleConfirmVersion">我知道了</el-button>
@@ -47,6 +47,8 @@
 	const isShowUse = ref(false);
 	const isShowTourSecond = ref(false);
 	const newVersion = ref('');
+	const downloadLoading = ref(false);
+	const downloadDisabled = ref(false);
 	const tipsCompRef = ref<InstanceType<typeof TipsComp> | null>(null);
 
 	// 配置 ElMessage 的最大显示数量
@@ -77,8 +79,13 @@
 
 	// 下载最新版本
 	const handleDownload = async () => {
+		if (downloadDisabled.value) return;
+		
+		downloadLoading.value = true;
+		downloadDisabled.value = true;
+		
 		try {
-			const response = await fetch('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip');
+			const response = await fetch('https://githubraw.com/ljh22/vue-work-time/master/dist.zip');
 			if (!response.ok) throw new Error('下载失败');
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
@@ -92,6 +99,12 @@
 		} catch (error) {
 			// 如果直接下载失败，回退到打开页面
 			window.open('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip', '_blank');
+		} finally {
+			downloadLoading.value = false;
+			// 10秒后恢复可点击
+			setTimeout(() => {
+				downloadDisabled.value = false;
+			}, 10000);
 		}
 	};
 
