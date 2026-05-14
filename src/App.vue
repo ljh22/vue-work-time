@@ -35,12 +35,14 @@
 				</el-col>
 			</el-row>
 		</div>
+		<div class="version-tag">{{ CURRENT_VERSION }}</div>
 	</el-config-provider>
 </template>
 
 <script setup lang="ts">
 	import { ref, reactive, onMounted } from 'vue';
 	import utils from '@/utils/utils';
+	import { CURRENT_VERSION } from '@/utils/version';
 	import TipsComp from './components/TipsComp.vue';
 	import ModalComp from './components/ModalComp.vue';
 
@@ -80,12 +82,12 @@
 	// 下载最新版本
 	const handleDownload = async () => {
 		if (downloadDisabled.value) return;
-		
+
 		downloadLoading.value = true;
 		downloadDisabled.value = true;
-		
+
 		try {
-			const response = await fetch('https://raw.githubusercontent.com/ljh22/vue-work-time/master/dist.zip');
+			const response = await fetch('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip');
 			if (!response.ok) throw new Error('下载失败');
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
@@ -98,7 +100,7 @@
 			URL.revokeObjectURL(url);
 		} catch (error) {
 			// 如果直接下载失败，回退到打开页面
-			window.open('https://github.com/ljh22/vue-work-time/blob/master/dist.zip', '_blank');
+			window.open('https://gitee.com/ljh-project/vue-work-time/blob/master/dist.zip', '_blank');
 		} finally {
 			downloadLoading.value = false;
 			// 10秒后恢复可点击
@@ -109,10 +111,10 @@
 	};
 
 	// 挂载时检查版本
-	onMounted(async () => {
-		const result = await utils.checkVersionUpdate();
+	onMounted(() => {
+		const result = utils.checkVersionUpdate();
 		if (result.needUpdate) {
-			newVersion.value = result.remoteVersion || '';
+			newVersion.value = result.currentVersion;
 		}
 	});
 
@@ -173,5 +175,15 @@
 			flex-direction: column;
 			align-content: center;
 		}
+	}
+
+	.version-tag {
+		position: fixed;
+		right: 10px;
+		bottom: 5px;
+		font-size: 10px;
+		color: #ccc;
+		z-index: 9999;
+		user-select: none;
 	}
 </style>

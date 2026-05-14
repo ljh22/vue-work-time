@@ -35,4 +35,22 @@ export interface Utils {
 	 * @returns  组件根DOM元素
 	 */
 	getComponentRoot: (compRef: any) => HTMLElement | null;
+	/**
+	 * 检查插件版本是否需要更新
+	 * @returns { needUpdate: boolean; currentVersion: string }
+	 */
+	checkVersionUpdate: () => {
+		needUpdate: boolean;
+		currentVersion: string;
+	};
+	/**
+	 * 获取当前版本号
+	 * @returns 当前版本号
+	 */
+	getCurrentVersion: () => string;
+	/**
+	 * 标记用户已确认当前版本
+	 * @param version 需要确认的版本号
+	 */
+	confirmVersion: (version: string) => void;
 }

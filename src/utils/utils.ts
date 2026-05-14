@@ -1,53 +1,30 @@
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
 import type { TableData, ProcessedData } from '@/types/TableData';
+import { CURRENT_VERSION } from './version';
 let calculatedData: ProcessedData[] = [];
 
-// Gitee 仓库的 raw 文件地址
-const VERSION_URL = 'https://raw.githubusercontent.com/ljh22/vue-work-time/master/public/version.json';
-
 /**
- * 获取远程版本号
- * @returns Promise<string | null> 远程版本号，获取失败返回 null
+ * 获取当前版本号
+ * @returns 当前版本号
  */
-const getRemoteVersion = async (): Promise<string | null> => {
-	// 开发环境下跳过版本检查（避免 CORS 问题）
-	if (import.meta.env.DEV) {
-		return null;
-	}
-	try {
-		const response = await fetch(VERSION_URL, {
-			method: 'GET',
-			cache: 'no-cache',
-		});
-		if (!response.ok) {
-			return null;
-		}
-		const data = await response.json();
-		return data.version || null;
-	} catch (error) {
-		console.error('获取远程版本失败:', error);
-		return null;
-	}
+const getCurrentVersion = (): string => {
+	return CURRENT_VERSION;
 };
 
 /**
- * 检查插件版本是否需要更新（异步远程检查）
- * @returns Promise<{ needUpdate: boolean; remoteVersion: string | null }>
+ * 检查插件版本是否需要更新
+ * @returns { needUpdate: boolean; currentVersion: string }
  */
-const checkVersionUpdate = async (): Promise<{
+const checkVersionUpdate = (): {
 	needUpdate: boolean;
-	remoteVersion: string | null;
-}> => {
-	const remoteVersion = await getRemoteVersion();
-	if (!remoteVersion) {
-		return { needUpdate: false, remoteVersion };
-	}
-
+	currentVersion: string;
+} => {
+	const currentVersion = getCurrentVersion();
 	const storedVersion = localStorage.getItem('pluginVersion');
-	const needUpdate = storedVersion !== remoteVersion;
+	const needUpdate = !storedVersion || storedVersion !== currentVersion;
 
-	return { needUpdate, remoteVersion };
+	return { needUpdate, currentVersion };
 };
 
 /**
@@ -293,4 +270,4 @@ const addDate = (date: Date, tableData: TableData[]) => {
 const getComponentRoot = (compRef: any) => {
 	return compRef.value?.$el ?? compRef.value;
 };
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getRemoteVersion, confirmVersion };
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getCurrentVersion, confirmVersion };
