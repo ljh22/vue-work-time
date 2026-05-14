@@ -85,7 +85,7 @@
 		downloadDisabled.value = true;
 		
 		try {
-			const response = await fetch('https://githubraw.com/ljh22/vue-work-time/master/dist.zip');
+			const response = await fetch('https://raw.githubusercontent.com/ljh22/vue-work-time/master/dist.zip');
 			if (!response.ok) throw new Error('下载失败');
 			const blob = await response.blob();
 			const url = URL.createObjectURL(blob);
@@ -98,7 +98,7 @@
 			URL.revokeObjectURL(url);
 		} catch (error) {
 			// 如果直接下载失败，回退到打开页面
-			window.open('https://gitee.com/ljh-project/vue-work-time/raw/master/dist.zip', '_blank');
+			window.open('https://github.com/ljh22/vue-work-time/blob/master/dist.zip', '_blank');
 		} finally {
 			downloadLoading.value = false;
 			// 10秒后恢复可点击
