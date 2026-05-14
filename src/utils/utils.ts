@@ -14,6 +14,7 @@ const getCurrentVersion = (): string => {
 
 /**
  * 检查插件版本是否需要更新
+ * 通过检测页面右下角版本号与缓存版本号是否一致来判断
  * @returns { needUpdate: boolean; currentVersion: string }
  */
 const checkVersionUpdate = (): {

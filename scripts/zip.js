@@ -1,12 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
 
-// 读取 public/version.json 获取版本号
-const versionJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'version.json'), 'utf-8'));
-const version = versionJson.version || '1.0.0';
-const distDir = path.join(process.cwd(), 'dist');
-const outputPath = path.join(process.cwd(), 'dist.zip');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(__dirname, '..');
+
+// 从 package.json 读取版本号
+const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf-8'));
+const version = packageJson.version || '1.0.0';
+const distDir = path.join(rootDir, 'dist');
+const outputPath = path.join(rootDir, 'dist.zip');
 const outerFolderName = `dist-${version}`;
 
 // 使用 PowerShell 压缩，包含外层文件夹（静默模式）
