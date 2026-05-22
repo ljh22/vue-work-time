@@ -13,8 +13,19 @@ const getCurrentVersion = (): string => {
 };
 
 /**
+ * 判断当前是否处于浏览器插件环境
+ * 通过检测 chrome.runtime 对象是否存在来判断
+ * @returns { boolean } 是否为插件环境
+ */
+const isPluginEnvironment = (): boolean => {
+	const win = window as unknown as { chrome?: { runtime?: unknown } };
+	return typeof win.chrome !== 'undefined' && typeof win.chrome.runtime !== 'undefined';
+};
+
+/**
  * 检查插件版本是否需要更新
  * 通过检测页面右下角版本号与缓存版本号是否一致来判断
+ * 仅在插件环境下才进行版本检测
  * @returns { needUpdate: boolean; currentVersion: string }
  */
 const checkVersionUpdate = (): {
@@ -22,6 +33,12 @@ const checkVersionUpdate = (): {
 	currentVersion: string;
 } => {
 	const currentVersion = getCurrentVersion();
+	
+	// 如果不是插件环境，直接返回不需要更新
+	if (!isPluginEnvironment()) {
+		return { needUpdate: false, currentVersion };
+	}
+	
 	const storedVersion = localStorage.getItem('pluginVersion');
 	const needUpdate = !storedVersion || storedVersion !== currentVersion;
 
