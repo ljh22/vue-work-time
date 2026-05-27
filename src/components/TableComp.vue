@@ -1,9 +1,24 @@
 <template>
 	<div class="table-container">
-		<el-text class="mx-1 title-text">
-			本月总工时：{{ allHours }}, 平均工时为：{{ averageHours }}
-			<span v-if="beInDebtHours > 0"> , 还差规定平均 8 小时工时为：{{ beInDebtHours }} 小时 </span>
-		</el-text>
+		<div class="summary-cards">
+			<el-card shadow="never" class="summary-card">
+				<div class="label">本月总工时</div>
+				<div class="value">{{ allHours }} <span class="unit">小时</span></div>
+			</el-card>
+			<el-card shadow="never" class="summary-card">
+				<div class="label">日平均工时</div>
+				<div class="value">{{ averageHours }} <span class="unit">小时</span></div>
+			</el-card>
+			<el-card shadow="never" class="summary-card highlight" v-if="beInDebtHours > 0">
+				<div class="label">还差工时</div>
+				<div class="value danger">{{ beInDebtHours }} <span class="unit">小时</span></div>
+			</el-card>
+			<el-card shadow="never" class="summary-card success" v-else>
+				<div class="label">工时达成</div>
+				<div class="value">{{ Math.abs(beInDebtHours) }} <span class="unit">小时</span></div>
+			</el-card>
+		</div>
+
 		<el-table
 			:data="tableData"
 			style="width: 100%"
@@ -11,100 +26,84 @@
 			border
 			show-summary
 			:highlight-current-row="true"
-			append-filter-panel-to="body"
-			:allow-drag-last-column="false"
-			:header-cell-style="{ textAlign: 'center' }"
+			:header-cell-style="{ backgroundColor: 'var(--el-fill-color-light)', color: 'var(--el-text-color-primary)', fontWeight: 'bold', textAlign: 'center' }"
 			:cell-style="{ textAlign: 'center' }"
 			:summary-method="getSummaries"
 			@header-dragend="handleHeaderDragend"
+			class="custom-table"
 		>
-			<el-table-column prop="empName" label="姓名" width="180" min-width="120" />
-			<el-table-column prop="dt" label="日期" width="180" sortable min-width="120" />
-			<el-table-column prop="validHours" label="有效工时/小时" width="180" min-width="120">
+			<el-table-column prop="empName" label="姓名" width="120" />
+			<el-table-column prop="dt" label="日期" width="140" sortable />
+			<el-table-column prop="validHours" label="有效工时" width="120">
 				<template #default="scope">
-					<el-tag type="success" v-if="Number(customRound(scope.row.validHours)) >= 8">
-						{{ customRound(scope.row.validHours) }}
-					</el-tag>
-					<el-tag type="danger" v-else>
+					<el-tag :type="Number(customRound(scope.row.validHours)) >= 8 ? 'success' : 'danger'" effect="plain">
 						{{ customRound(scope.row.validHours) }}
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column prop="" label="打卡时间（上班）" width="200" min-width="220">
+			<el-table-column label="上班打卡时间" min-width="180">
 				<template #default="scope">
-					<el-input
-						v-model="scope.row.checkInTime"
-						placeholder=""
-						ref="checkInInputRef"
-						v-if="scope.row.isShowCheckInEdit"
-						@blur="handleCheckInBlur(scope.row)"
-						@keydown.enter="handleCheckInEnter(scope.row, $event)"
-					></el-input>
-					<div class="edit-box" v-else>
-						<el-text>{{ scope.row.checkInTime }}</el-text>
-						<el-tooltip content="编辑上班打卡时间" placement="top">
-							<el-icon @click="handleShowCheckInTimeEdit(scope.row)">
-								<Edit class="edit-icon" />
-							</el-icon>
-						</el-tooltip>
+					<div class="edit-cell">
+						<el-input
+							v-model="scope.row.checkInTime"
+							v-if="scope.row.isShowCheckInEdit"
+							size="small"
+							@blur="handleCheckInBlur(scope.row)"
+							@keydown.enter="handleCheckInEnter(scope.row, $event)"
+							ref="checkInInputRef"
+						/>
+						<div class="display-box" v-else @click="handleShowCheckInTimeEdit(scope.row)">
+							<span>{{ scope.row.checkInTime }}</span>
+							<el-icon class="edit-icon"><Edit /></el-icon>
+						</div>
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="" label="打卡时间（下班）" width="200" min-width="220">
+			<el-table-column label="下班打卡时间" min-width="180">
 				<template #default="scope">
-					<el-input
-						v-model="scope.row.checkOutTime"
-						placeholder=""
-						ref="checkOutInputRef"
-						v-if="scope.row.isShowCheckOutEdit"
-						@blur="handleCheckOutBlur(scope.row)"
-						@keydown.enter="handleCheckOutEnter(scope.row, $event)"
-					></el-input>
-					<div class="edit-box" v-else>
-						<el-text>{{ scope.row.checkOutTime }}</el-text>
-						<el-tooltip content="编辑下班打卡时间" placement="top">
-							<el-icon @click="handleShowCheckOutTimeEdit(scope.row)">
-								<Edit class="edit-icon" />
-							</el-icon>
-						</el-tooltip>
+					<div class="edit-cell">
+						<el-input
+							v-model="scope.row.checkOutTime"
+							v-if="scope.row.isShowCheckOutEdit"
+							size="small"
+							@blur="handleCheckOutBlur(scope.row)"
+							@keydown.enter="handleCheckOutEnter(scope.row, $event)"
+							ref="checkOutInputRef"
+						/>
+						<div class="display-box" v-else @click="handleShowCheckOutTimeEdit(scope.row)">
+							<span>{{ scope.row.checkOutTime }}</span>
+							<el-icon class="edit-icon"><Edit /></el-icon>
+						</div>
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="beInDebtHours" label="所欠工时/小时" sortable min-width="120">
+			<el-table-column prop="beInDebtHours" label="所欠工时" width="120" sortable>
 				<template #default="scope">
-					<el-tag type="success" v-if="Number(customRound(scope.row.beInDebtHours)) <= 0">
-						{{ customRound(scope.row.beInDebtHours) }}
-					</el-tag>
-					<el-tag type="danger" v-else>
+					<el-tag :type="Number(customRound(scope.row.beInDebtHours)) <= 0 ? 'success' : 'danger'" effect="light">
 						{{ customRound(scope.row.beInDebtHours) }}
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column label="操作" width="100" align="center">
+			<el-table-column label="操作" width="100" fixed="right">
 				<template #default="scope">
-					<div v-if="isLastRow(scope.$index)" class="operation-buttons">
-						<el-tooltip content="新增一条新的工时" placement="top">
-							<el-button
-								type="primary"
-								:icon="Plus"
-								circle
-								size="small"
-								@click="handleAddNewRecord"
-								class="add-button"
-							/>
-						</el-tooltip>
-						<el-tooltip content="删除这条工时记录" placement="top" v-if="scope.row.isNewlyAdded">
-							<el-button
-								type="danger"
-								:icon="Minus"
-								circle
-								size="small"
-								@click="handleDeleteRecord(scope.row)"
-								class="delete-button"
-							/>
-						</el-tooltip>
+					<div v-if="isLastRow(scope.$index)" class="action-buttons">
+						<el-button
+							type="primary"
+							:icon="Plus"
+							circle
+							size="small"
+							@click="handleAddNewRecord"
+						/>
+						<el-button
+							v-if="scope.row.isNewlyAdded"
+							type="danger"
+							:icon="Minus"
+							circle
+							size="small"
+							@click="handleDeleteRecord(scope.row)"
+						/>
 					</div>
-					<span v-else class="empty-operation">--</span>
+					<span v-else class="empty-placeholder">--</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -608,140 +607,119 @@
 <style scoped lang="scss">
 	.table-container {
 		margin-top: 20px;
-		width: 90%;
-		margin-left: -185px;
+	}
 
-		.title-text {
-			display: block;
-			text-align: center;
-			margin-bottom: 10px;
-			font-weight: bold;
-			font-size: 16px;
-		}
+	.summary-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 20px;
+		margin-bottom: 24px;
 
-		.edit-box {
-			padding: 5px;
-			display: flex;
-			align-items: center;
-			justify-content: space-evenly;
+		.summary-card {
+			border-radius: 12px;
+			border: 1px solid var(--el-border-color-lighter);
+			transition: all 0.3s;
 
-			.el-icon {
-				font-size: 17px;
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px var(--app-shadow-color);
 			}
 
-			.edit-icon {
-				color: rgb(110, 108, 108);
+			.label {
+				font-size: 14px;
+				color: var(--el-text-color-secondary);
+				margin-bottom: 8px;
+			}
+
+			.value {
+				font-size: 24px;
+				font-weight: bold;
+				color: var(--el-text-color-primary);
+
+				.unit {
+					font-size: 14px;
+					font-weight: normal;
+					color: var(--el-text-color-placeholder);
+					margin-left: 4px;
+				}
+
+				&.danger {
+					color: var(--el-color-danger);
+				}
+			}
+
+			&.highlight {
+				border-color: var(--el-color-danger-light-8);
+				background-color: var(--el-color-danger-light-9);
+			}
+
+			&.success {
+				border-color: var(--el-color-success-light-8);
+				background-color: var(--el-color-success-light-9);
+			}
+		}
+	}
+
+	.custom-table {
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+
+		:deep(.el-table__inner-wrapper) {
+			&::before {
+				display: none;
 			}
 		}
 
-		:deep(.el-table) {
-			width: 100%;
-			color: #000;
+		:deep(.el-table__header) {
+			th {
+				background-color: var(--el-fill-color-light) !important;
+			}
+		}
 
-			.el-table__inner-wrapper {
-				.el-table__body-wrapper {
-					.el-table__body {
-						tbody {
-							.el-table__row--striped .el-table__cell {
-								background: color-mix(in srgb, var(--el-color-primary) 40%, white 30%);
+		.edit-cell {
+			.display-box {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				cursor: pointer;
+				padding: 4px 8px;
+				border-radius: 4px;
+				transition: background-color 0.2s;
 
-								&:first-child {
-									border-top-left-radius: 10px;
-									border-bottom-left-radius: 10px;
-								}
-
-								&:last-child {
-									border-top-right-radius: 10px;
-									border-bottom-right-radius: 10px;
-								}
-							}
-
-							.current-row .el-table__cell {
-								background: #ced6e0 !important;
-								border-right-color: #ced6e0;
-
-								&:first-child {
-									border-top-left-radius: 10px;
-									border-bottom-left-radius: 10px;
-								}
-
-								&:last-child {
-									border-top-right-radius: 10px;
-									border-bottom-right-radius: 10px;
-								}
-							}
-						}
+				&:hover {
+					background-color: var(--el-fill-color-light);
+					
+					.edit-icon {
+						opacity: 1;
 					}
+				}
+
+				.edit-icon {
+					font-size: 14px;
+					color: var(--el-color-primary);
+					opacity: 0;
+					transition: opacity 0.2s;
 				}
 			}
 		}
 
-		.dark & :deep(.el-table) {
-			color: #fff;
-
-			.el-table__inner-wrapper {
-				.el-table__body-wrapper {
-					.el-table__body {
-						tbody {
-							.el-table__row--striped .el-table__cell {
-								color: #000;
-								background: color-mix(in srgb, var(--el-color-primary) 70%, white 30%);
-
-								.el-text {
-									color: #000;
-								}
-
-								.el-input {
-									.el-input__wrapper {
-										padding: 0;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		.add-button {
-			// transition: all 0.3s ease;
-			&:hover {
-				// transform: scale(1.1);
-				box-shadow: 0px 2px 8px var(--el-color-primary);
-			}
-		}
-
-		.delete-button {
-			&:hover {
-				box-shadow: 0px 2px 8px var(--el-color-danger);
-			}
-		}
-
-		.operation-buttons {
+		.action-buttons {
 			display: flex;
-			gap: 8px;
 			justify-content: center;
-			align-items: center;
+			gap: 8px;
 		}
 
-		:deep(.el-button) {
-			background-color: var(--el-color-primary) !important;
-			border-color: var(--el-color-primary) !important;
-
-			&:hover {
-				background-color: var(--el-color-primary) !important;
-				border-color: var(--el-color-primary) !important;
-			}
-
-			&:active {
-				background-color: var(--el-color-primary) !important;
-				border-color: var(--el-color-primary) !important;
-			}
+		.empty-placeholder {
+			color: var(--el-text-color-placeholder);
 		}
+	}
 
-		.empty-operation {
-			color: #909399;
-			font-size: 14px;
+	:deep(.el-table__footer-wrapper) {
+		td {
+			background-color: var(--el-fill-color-lighter) !important;
+			color: var(--el-text-color-primary);
 		}
 	}
 </style>

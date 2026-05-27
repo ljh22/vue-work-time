@@ -1,12 +1,12 @@
 <template>
 	<div class="modal-container">
-		<div class="theme-box">
-			<div class="color-picker">
-				<el-text class="color-text">主题色选择</el-text>
+		<div class="settings-bar">
+			<div class="setting-item">
+				<span class="label">主题色</span>
 				<el-color-picker v-model="color" show-alpha :predefine="predefineColors" @change="handleChangeColor" />
 			</div>
-			<div class="dark-box">
-				<el-text class="dark-text">深色模式</el-text>
+			<div class="setting-item">
+				<span class="label">深色模式</span>
 				<el-switch
 					v-model="darkMode"
 					size="large"
@@ -24,8 +24,8 @@
 					</template>
 				</el-switch>
 			</div>
-			<div class="guide-box">
-				<el-tooltip content="重新查看使用引导" placement="left">
+			<div class="setting-item">
+				<el-tooltip content="重新查看使用引导" placement="bottom">
 					<el-button
 						ref="guideButtonRef"
 						type="primary"
@@ -38,56 +38,100 @@
 				</el-tooltip>
 			</div>
 		</div>
-		<el-input
-			ref="textarea"
-			class="time-textarea"
-			v-model="textareaValue"
-			style="width: 60%"
-			:autosize="{ minRows: 10, maxRows: 30 }"
-			type="textarea"
-			placeholder="请粘贴打卡JSON数据"
-			@change="handleChangeTextarea"
-			@focus="handleTextareaFocus"
-		/>
-		<ButtonControl
-			ref="buttonControlRef"
-			@handleShowTable="handleShowTable"
-			@handleChangeTableData="handleChangeTableData"
-			@handleChangeTableDataNew="handleChangeTableDataNew"
-			:tableInitData="tableInitData"
-		></ButtonControl>
-		<TableComp
-			v-if="isShowTable"
-			:showTableInitData="showTableInitData"
-			:showTableDataNew="showTableDataNew"
-			:CalculationMethodType="CalculationMethodType"
-			@update-data="handleUpdateTableData"
-		></TableComp>
+
+		<div class="input-section">
+			<div class="input-header">
+				<h2 class="section-title">数据导入</h2>
+				<el-button type="primary" link @click="handleShowToUse">查看获取教程</el-button>
+			</div>
+			<el-input
+				ref="textarea"
+				class="time-textarea"
+				v-model="textareaValue"
+				:autosize="{ minRows: 8, maxRows: 15 }"
+				type="textarea"
+				placeholder="请粘贴考勤 JSON 数据（例如从 Chrome 控制台 Network 面板复制的 items 数组）"
+				@change="handleChangeTextarea"
+				@focus="handleTextareaFocus"
+			/>
+			<div class="control-wrapper">
+				<ButtonControl
+					ref="buttonControlRef"
+					@handleShowTable="handleShowTable"
+					@handleChangeTableData="handleChangeTableData"
+					@handleChangeTableDataNew="handleChangeTableDataNew"
+					:tableInitData="tableInitData"
+				></ButtonControl>
+			</div>
+		</div>
+
+		<Transition name="fade">
+			<div v-if="isShowTable" class="result-section">
+				<div class="section-header">
+					<h2 class="section-title">考勤统计结果</h2>
+				</div>
+				<TableComp
+					:showTableInitData="showTableInitData"
+					:showTableDataNew="showTableDataNew"
+					:CalculationMethodType="CalculationMethodType"
+					@update-data="handleUpdateTableData"
+				></TableComp>
+			</div>
+		</Transition>
+
 		<Transition name="slide-fade">
 			<div class="how-to-use-box" v-if="props.isShowUse">
-			<div class="close-button-container">
-				<el-button type="primary" size="small" @click="handleCloseUse" class="close-button"> 关闭 </el-button>
+				<div class="guide-header">
+					<h3>获取数据教程</h3>
+				</div>
+				<div class="guide-content">
+					<div class="guide-step">
+						<div class="step-num">1</div>
+						<div class="step-detail">
+							<p>打开个人考勤，点击查看打卡数据，随后打开控制台（F12）点到 Network 选项卡，清空请求数据</p>
+							<div class="step-images">
+								<img src="https://foruda.gitee.com/images/1711614780301895326/9c11fc4b_10888693.png" alt="" loading="lazy" />
+								<img src="https://foruda.gitee.com/images/1751190501730420066/a6ddeb8e_10888693.png" alt="" loading="lazy" />
+							</div>
+						</div>
+					</div>
+					<div class="guide-step">
+						<div class="step-num">2</div>
+						<div class="step-detail">
+							<p>选择 50 条数据，点击 getLocSetDataByPage 请求，切换到 Response 标签页</p>
+							<div class="step-images">
+								<img src="https://foruda.gitee.com/images/1751190497927676192/38c3991e_10888693.png" alt="" loading="lazy" />
+								<img src="https://foruda.gitee.com/images/1711615026549164653/9f871844_10888693.png" alt="" loading="lazy" />
+							</div>
+						</div>
+					</div>
+					<div class="guide-step">
+						<div class="step-num">3</div>
+						<div class="step-detail">
+							<p>找到 items 数组，复制整个数组内容即可（带不带后面逗号均可）</p>
+							<div class="step-images">
+								<img src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png" alt="" loading="lazy" />
+								<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<strong>1. 打开个人考勤，点击查看打卡数据，随后打开控制台（快捷键F12）点到 network 选项卡，清空请求数据</strong>
-			<br />
-			<br />
-			<img src="https://foruda.gitee.com/images/1711614780301895326/9c11fc4b_10888693.png" alt="" loading="lazy" />
-			<img src="https://foruda.gitee.com/images/1751190501730420066/a6ddeb8e_10888693.png" alt="" loading="lazy" />
-			<br />
+		</Transition>
 
-			<strong>2.清空数据后，选择50条数据，点击 getLocSetDataByPage 请求，切换到 response</strong>
-			<br />
-			<br />
-			<img src="https://foruda.gitee.com/images/1751190497927676192/38c3991e_10888693.png" alt="" loading="lazy" />
-			<img src="https://foruda.gitee.com/images/1711615026549164653/9f871844_10888693.png" alt="" loading="lazy" />
-			<br />
-
-			<strong>3.找到 items，点击左侧收起的小图标，之后仅仅复制这个数组,带不带后面的逗号均可以</strong>
-			<br />
-			<br />
-			<img src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png" alt="" loading="lazy" />
-			<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
-		</div>
+		<!-- 全局固定关闭按钮 -->
+		<Transition name="fade">
+			<div class="fixed-close-action" v-if="props.isShowUse">
+				<el-tooltip content="关闭使用说明" placement="left">
+					<el-button 
+						type="danger" 
+						:icon="utils.getIcon('Close')" 
+						circle 
+						@click="handleCloseUse"
+						class="global-close-btn"
+					/>
+				</el-tooltip>
+			</div>
 		</Transition>
 	</div>
 	<el-tour v-model="isShowTourSecond" :close-on-click-modal="true" @close="closeTourSecond">
@@ -170,6 +214,7 @@
 	// 定义emits
 	const emit = defineEmits<{
 		'close-use': [];
+		'show-to-use': [];
 		'restart-guide': [];
 	}>();
 
@@ -223,6 +268,10 @@
 		CalculationMethodType.value = -1;
 	};
 
+	const handleShowToUse = () => {
+		emit('show-to-use');
+	};
+
 	const handleCloseUse = () => {
 		emit('close-use');
 	};
@@ -268,7 +317,14 @@
 				nextTick(() => {
 					const element = document.querySelector('.how-to-use-box');
 					if (element) {
-						smoothScrollToElement(element);
+						// 考虑到顶部有 64px 的 sticky header，滚动时需要留出偏移
+						const headerHeight = 80; // 64px header + 一些间距
+						const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+						
+						window.scrollTo({
+							top: elementPosition - headerHeight,
+							behavior: 'smooth'
+						});
 					}
 				});
 			}
@@ -329,15 +385,14 @@
 		if (show) {
 			nextTick(() => {
 				setTimeout(() => {
-					const root = buttonControlElement.value ?? utils.getComponentRoot(buttonControlRef);
-					if (root instanceof HTMLElement) {
-						const submitButton = root.querySelector('.submit') as HTMLElement | null;
-						if (submitButton) {
-							submitButton.scrollIntoView({
-								behavior: 'smooth',
-								block: 'start',
-							});
-						}
+					const element = document.querySelector('.result-section');
+					if (element) {
+						const headerHeight = 80;
+						const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+						window.scrollTo({
+							top: elementPosition - headerHeight,
+							behavior: 'smooth',
+						});
 					}
 				}, 100);
 			});
@@ -374,6 +429,199 @@
 </script>
 
 <style scoped lang="scss">
+	.modal-container {
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+	}
+
+	.settings-bar {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 24px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid var(--el-border-color-lighter);
+
+		.setting-item {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+
+			.label {
+				font-size: 14px;
+				color: var(--el-text-color-regular);
+			}
+		}
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: 600;
+		margin: 0;
+		color: var(--el-text-color-primary);
+		position: relative;
+		padding-left: 12px;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 4px;
+			height: 18px;
+			background-color: var(--el-color-primary);
+			border-radius: 2px;
+		}
+	}
+
+	.input-section {
+		.input-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 16px;
+		}
+
+		.time-textarea {
+			margin-bottom: 20px;
+
+			:deep(.el-textarea__inner) {
+				border-radius: 8px;
+				padding: 12px;
+				font-family: monospace;
+				transition: all 0.3s;
+				background-color: var(--el-fill-color-blank);
+
+				&:focus {
+					box-shadow: 0 0 0 2px var(--el-color-primary-light-8);
+				}
+			}
+		}
+
+		.control-wrapper {
+			display: flex;
+			justify-content: center;
+		}
+	}
+
+	.result-section {
+		animation: fadeInUp 0.5s ease-out;
+
+		.section-header {
+			margin-bottom: 20px;
+		}
+	}
+
+	.how-to-use-box {
+		background-color: var(--el-fill-color-lighter);
+		border-radius: 12px;
+		padding: 24px;
+		margin-top: 20px;
+		border: 1px solid var(--el-border-color-light);
+		position: relative; // 确保可以相对定位
+
+		.guide-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 24px;
+
+			h3 {
+				margin: 0;
+				font-size: 18px;
+			}
+		}
+
+		.guide-content {
+			display: flex;
+			flex-direction: column;
+			gap: 32px;
+		}
+
+		.guide-step {
+			display: flex;
+			gap: 16px;
+
+			.step-num {
+				width: 28px;
+				height: 28px;
+				background-color: var(--el-color-primary);
+				color: white;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: bold;
+				flex-shrink: 0;
+			}
+
+			.step-detail {
+				flex: 1;
+
+				p {
+					margin: 0 0 16px 0;
+					font-weight: 500;
+					color: var(--el-text-color-primary);
+				}
+
+				.step-images {
+					display: flex;
+					flex-wrap: wrap;
+					gap: 12px;
+
+					img {
+						max-width: 100%;
+						height: auto;
+						border-radius: 8px;
+						border: 1px solid var(--el-border-color-lighter);
+						box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+					}
+				}
+			}
+		}
+	}
+
+	.fixed-close-action {
+		position: fixed;
+		right: 40px;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2000;
+
+		.global-close-btn {
+			width: 56px;
+			height: 56px;
+			font-size: 24px;
+			box-shadow: 0 4px 16px rgba(var(--el-color-danger-rgb), 0.3);
+			transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+			border: 2px solid white;
+
+			&:hover {
+				transform: scale(1.1) rotate(90deg);
+				box-shadow: 0 6px 20px rgba(var(--el-color-danger-rgb), 0.5);
+			}
+
+			&:active {
+				transform: scale(0.95);
+			}
+		}
+
+		@media (max-width: 1400px) {
+			right: 20px;
+		}
+	}
+
+	.guide-button {
+		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px var(--el-color-primary-light-5);
+		}
+	}
+
 	@keyframes fadeInUp {
 		from {
 			opacity: 0;
@@ -385,191 +633,27 @@
 		}
 	}
 
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity 0.3s ease;
+	}
+	.fade-enter-from, .fade-leave-to {
+		opacity: 0;
+	}
+
 	.slide-fade-enter-active {
-		transition: opacity 0.5s ease-out;
+		transition: all 0.3s ease-out;
 	}
-
 	.slide-fade-leave-active {
-		transition: all 0.4s ease-in;
+		transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 	}
-
-	.slide-fade-enter-from {
+	.slide-fade-enter-from, .slide-fade-leave-to {
+		transform: translateY(20px);
 		opacity: 0;
 	}
 
-	.slide-fade-leave-to {
-		opacity: 0;
-		transform: translateY(-10px);
-	}
-
-	.modal-container {
-		position: relative;
-		.theme-box {
-			position: fixed;
-			right: 20px;
-			top: 10px;
-			.color-picker {
-				.color-text {
-					margin-right: 10px;
-				}
-			}
-			.dark-box {
-				margin-top: 10px;
-				.dark-text {
-					margin-right: 10px;
-				}
-			}
-			.guide-box {
-				margin-top: 10px;
-				display: flex;
-				justify-content: flex-end;
-				.guide-button {
-					transition: all 0.3s ease;
-					width: 36px;
-					height: 36px;
-					padding: 0;
-					&:hover {
-						transform: scale(1.1);
-						box-shadow: 0px 2px 8px var(--el-color-primary-light-3);
-					}
-					:deep(.el-button--primary) {
-						background-color: var(--el-color-primary) !important;
-						border-color: var(--el-color-primary) !important;
-						&:hover {
-							background-color: var(--el-color-primary) !important;
-							border-color: var(--el-color-primary) !important;
-						}
-					}
-					:deep(.el-icon) {
-						font-size: 20px;
-					}
-				}
-			}
-			:deep(.el-textarea .el-textarea__inner) {
-				min-height: 300px !important;
-				padding: 10px;
-				box-sizing: border-box;
-				font-size: 14px;
-				margin-bottom: 50px;
-				border-radius: 10px;
-				box-shadow: 0 0 6px #838383;
-			}
-			:deep(.el-switch) {
-				.el-switch__core {
-					transition: box-shadow 0.3s ease;
-					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-					&:hover {
-						box-shadow: 0px 2px 13px 1px var(--el-color-primary);
-					}
-					.el-switch__action {
-						align-items: flex-start;
-						// 当包含custom-active-action时给el-switch__action添加边框
-						&:has(.custom-active-action) {
-							border: 1px solid var(--el-color-primary);
-							line-height: 20px;
-						}
-						.custom-inactive-action {
-							.sunny {
-								color: #000;
-							}
-						}
-						.custom-active-action {
-							.moon-icon {
-								color: #000;
-							}
-						}
-					}
-				}
-			}
-
-			// 暗黑模式下的发光效果
-			.dark & :deep(.el-switch) {
-				.el-switch__core {
-					&:hover {
-						box-shadow: 0px 2px 13px 1px var(--el-color-primary);
-					}
-				}
-			}
-		}
-		.time-textarea {
-			:deep(textarea) {
-				max-height: 400px;
-			}
-			// 确保聚焦状态下的边框在有滚动条时也能正常显示
-			:deep(.el-textarea__inner) {
-				&:focus {
-					// border: 1px solid var(--el-color-primary) !important;
-					box-shadow: 0 0 0 1px var(--el-color-primary) !important;
-					outline: none !important;
-				}
-				// 确保滚动条不会覆盖边框
-				box-sizing: border-box;
-				padding-right: 12px;
-				// 修复滚动条角落的白色间隙问题
-				scrollbar-color: var(--el-border-color-light) transparent;
-				scrollbar-width: thin;
-				// Webkit浏览器滚动条样式
-				&::-webkit-scrollbar {
-					width: 8px;
-				}
-				&::-webkit-scrollbar-track {
-					background: transparent;
-					border-radius: 10px;
-				}
-				&::-webkit-scrollbar-thumb {
-					background: var(--el-border-color-light);
-					border-radius: 10px;
-					&:hover {
-						background: var(--el-border-color);
-					}
-				}
-				// 修复滚动条角落
-				&::-webkit-scrollbar-corner {
-					background: transparent;
-				}
-			}
-		}
-		.how-to-use-box {
-			margin-top: 20px;
-			width: 90%;
-			margin-left: -185px;
-			display: flex;
-			padding: 24px;
-			border: 1px solid #ccc;
-			flex-direction: column;
-			position: relative;
-			img {
-				border: 1px solid #ccc;
-				margin-bottom: 10px;
-				width: 90%;
-				animation: fadeInUp 0.6s ease-out;
-			}
-
-			.close-button-container {
-				position: fixed;
-				top: 50%;
-				right: 20px;
-				transform: translateY(-50%);
-				z-index: 1000;
-
-				.close-button {
-					border-radius: 50%;
-					width: 40px;
-					height: 40px;
-					padding: 0;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					font-size: 12px;
-				}
-				:deep(.el-button) {
-					border: none;
-					&:hover {
-						background-color: var(--el-color-primary);
-						box-shadow: 0px 1px 3px 1px #535454;
-					}
-				}
-			}
+	:deep(.el-switch) {
+		&.is-checked .el-switch__core {
+			background-color: var(--el-color-primary);
 		}
 	}
 </style>

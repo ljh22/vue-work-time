@@ -49,6 +49,18 @@ export interface Utils {
 	 */
 	getCurrentVersion: () => string;
 	/**
+	 * 确认版本
+	 * @param version 版本号
+	 */
+	confirmVersion: (version: string) => void;
+	/**
+	 * 获取图标组件
+	 * @param name 图标名称
+	 * @returns 图标组件
+	 */
+	getIcon: (name: string) => any;
+}
+	/**
 	 * 标记用户已确认当前版本
 	 * @param version 需要确认的版本号
 	 */

@@ -1,54 +1,39 @@
 <template>
 	<div class="btn-container">
-		<div class="btn-control">
-			<el-button type="primary" size="large" @click="chooseCalculationMethod(1)">计算工作日</el-button>
-			<el-button type="primary" size="large" @click="chooseCalculationMethod(2)">单独计算周末工时</el-button>
+		<div class="method-selector">
+			<el-radio-group v-model="CalculationMethodType" size="large" @change="handleMethodChange">
+				<el-radio-button :label="1" value="1">计算工作日</el-radio-button>
+				<el-radio-button :label="2" value="2">单独计算周末工时</el-radio-button>
+			</el-radio-group>
 		</div>
-		<div class="year-box" v-if="CalculationMethodType !== -1">
-			<el-tooltip content="当月存在国家法定节假日上班调休时，请选择调休日期" placement="top">
-				<el-text class="mx-1 text">选择需要计算的国家规定调休日期(持续优化~~)</el-text>
-			</el-tooltip>
-			<div class="calendar-box">
-				<el-date-picker
-					ref="datePickerRef"
-					v-model="selectedDate"
-					type="date"
-					placeholder="Pick a day"
-					size="default"
-					:editable="false"
-					@change="handleChange"
-					@panel-change="panelChange"
-				>
-					<template #prev-year>
-						<span class="custom-prev-year"></span>
-					</template>
-					<template #prev-month>
-						<span class="custom-prev-month">
-							<el-text class="mx-1">上个月</el-text>
-						</span>
-					</template>
-					<template #next-month>
-						<span class="custom-next-month">
-							<el-text class="mx-1">下个月</el-text>
-						</span>
-					</template>
-					<template #next-year>
-						<span class="custom-next-year"></span>
-					</template>
-				</el-date-picker>
+
+		<Transition name="fade">
+			<div class="extra-options" v-if="CalculationMethodType !== -1">
+				<div class="holiday-picker">
+					<el-tooltip content="当月存在国家法定节假日上班调休时，请选择调休日期" placement="top">
+						<span class="picker-label">法定节假日/调休选择</span>
+					</el-tooltip>
+					<el-date-picker
+						ref="datePickerRef"
+						v-model="selectedDate"
+						type="date"
+						placeholder="选择调休日"
+						size="default"
+						:editable="false"
+						@change="handleChange"
+						@panel-change="panelChange"
+						class="custom-picker"
+					/>
+				</div>
+				
+				<el-button type="primary" size="large" class="submit-btn" @click="handleSubmit">
+					开始解析数据
+				</el-button>
 			</div>
-		</div>
-		<el-button type="primary" size="large" class="submit" @click="handleSubmit" v-if="CalculationMethodType !== -1">
-			解析
-		</el-button>
+		</Transition>
 	</div>
 </template>
 
-<script lang="ts">
-	export default {
-		name: 'ButtonControl',
-	};
-</script>
 <script setup lang="ts">
 	import { inject, ref, watch } from 'vue';
 	import dayjs from 'dayjs';
@@ -87,6 +72,15 @@
 		handleChangeTableData: [data: TableData[], CalculationMethodType: number];
 		handleChangeTableDataNew: [data: ProcessedData[], CalculationMethodType: number];
 	}>();
+
+	const handleMethodChange = (val: any) => {
+		if (props.tableInitData.length === 0) {
+			ElMessage.warning('请先输入数据');
+			CalculationMethodType.value = -1;
+			return;
+		}
+		CalculationMethodType.value = Number(val);
+	};
 
 	// 选择日期后触发。
 	const handleChange = (val: Date) => {
@@ -144,63 +138,79 @@
 			emit('handleChangeTableData', newTableData, CalculationMethodType.value);
 		}
 	};
-	// 选择计算方式
-	const chooseCalculationMethod = (type: number) => {
-		if (props.tableInitData.length === 0) {
-			ElMessage.warning('请先输入数据');
-			return;
-		}
-		CalculationMethodType.value = type;
-	};
 </script>
 
 <style scoped lang="scss">
 	.btn-container {
-		margin-top: 20px;
-		width: 60%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		.btn-control {
-			width: 46%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			:deep(.el-button) {
-				width: 46%;
-				border: none;
-				&:hover {
-					background-color: var(--el-color-primary);
-					box-shadow: 0px 1px 3px 1px #535454;
-				}
-			}
+		gap: 24px;
+		width: 100%;
+		padding: 20px 0;
+	}
+
+	.method-selector {
+		:deep(.el-radio-button__inner) {
+			padding: 12px 24px;
+			font-size: 15px;
 		}
-		.year-box {
-			margin-top: 20px;
-			width: 44%;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			.text {
-				font-size: 14px;
-			}
-			.calendar-box {
-				width: 75%;
-				:deep(.el-tooltip__trigger) {
-					width: 100%;
-				}
-			}
+	}
+
+	.extra-options {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.holiday-picker {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		background-color: var(--el-fill-color-light);
+		padding: 8px 16px;
+		border-radius: 8px;
+		width: 100%;
+		box-sizing: border-box;
+
+		.picker-label {
+			font-size: 14px;
+			color: var(--el-text-color-regular);
+			white-space: nowrap;
 		}
-		:deep(.el-button),
-		.submit {
-			margin-top: 20px;
-			width: 44%;
-			width: 46%;
-			border: none;
-			&:hover {
-				background-color: var(--el-color-primary);
-				box-shadow: 0px 1px 3px 1px #535454;
-			}
+
+		.custom-picker {
+			flex: 1;
 		}
+	}
+
+	.submit-btn {
+		width: 100%;
+		height: 48px;
+		font-size: 16px;
+		font-weight: 600;
+		letter-spacing: 1px;
+		border-radius: 8px;
+		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px var(--el-color-primary-light-5);
+		}
+
+		&:active {
+			transform: translateY(0);
+		}
+	}
+
+	.fade-enter-active, .fade-leave-active {
+		transition: all 0.3s ease;
+	}
+	.fade-enter-from, .fade-leave-to {
+		opacity: 0;
+		transform: translateY(10px);
 	}
 </style>

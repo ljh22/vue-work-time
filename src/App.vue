@@ -12,30 +12,43 @@
 				<el-button type="primary" @click="handleConfirmVersion">我知道了</el-button>
 			</div>
 		</div>
-		<div class="container">
-			<el-row :gutter="0">
-				<el-col :span="6">
-					<div class="left">
+		<div class="app-wrapper">
+			<header class="app-header">
+				<div class="header-content">
+					<div class="logo-section">
+						<img src="/workTime.png" alt="logo" class="logo-img" />
+						<h1 class="app-title">WorkTime Master</h1>
+					</div>
+					<div class="header-actions">
 						<TipsComp
 							ref="tipsCompRef"
 							@show-to-use="handleShowToUse"
 							@showTourSecond="handleShowTourSecond"
 						></TipsComp>
 					</div>
-				</el-col>
-				<el-col :span="18">
-					<div class="right">
-						<ModalComp
-							:isShowUse="isShowUse"
-							@close-use="handleCloseUse"
-							:isShowTourSecond="isShowTourSecond"
-							@restart-guide="handleRestartGuide"
-						></ModalComp>
-					</div>
-				</el-col>
-			</el-row>
+				</div>
+			</header>
+
+			<main class="main-container">
+				<div class="content-card">
+					<ModalComp
+						:isShowUse="isShowUse"
+						@show-to-use="handleShowToUse"
+						@close-use="handleCloseUse"
+						:isShowTourSecond="isShowTourSecond"
+						@restart-guide="handleRestartGuide"
+					></ModalComp>
+				</div>
+			</main>
+
+			<footer class="app-footer">
+				<div class="version-info">
+					<span>Version {{ CURRENT_VERSION }}</span>
+					<span class="dot">·</span>
+					<el-link type="info" :underline="false" href="https://gitee.com/ljh-project/vue-work-time" target="_blank">Gitee</el-link>
+				</div>
+			</footer>
 		</div>
-		<div class="version-tag">{{ CURRENT_VERSION }}</div>
 	</el-config-provider>
 </template>
 
@@ -128,6 +141,89 @@
 </script>
 
 <style scoped lang="scss">
+	.app-wrapper {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background-color: var(--el-bg-color-page);
+	}
+
+	.app-header {
+		background-color: var(--el-bg-color);
+		box-shadow: 0 2px 8px var(--app-shadow-color);
+		padding: 0 20px;
+		height: 64px;
+		display: flex;
+		align-items: center;
+		position: sticky;
+		top: 0;
+		z-index: 1000;
+	}
+
+	.header-content {
+		max-width: 1200px;
+		width: 100%;
+		margin: 0 auto;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.logo-section {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+
+		.logo-img {
+			width: 32px;
+			height: 32px;
+		}
+
+		.app-title {
+			margin: 0;
+			font-size: 20px;
+			font-weight: 600;
+			background: linear-gradient(45deg, var(--el-color-primary), #67c23a);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+	}
+
+	.main-container {
+		flex: 1;
+		padding: 40px 20px;
+		max-width: 1200px;
+		width: 100%;
+		margin: 0 auto;
+		box-sizing: border-box;
+	}
+
+	.content-card {
+		background-color: var(--el-bg-color);
+		border-radius: 12px;
+		box-shadow: 0 4px 16px var(--app-shadow-color);
+		padding: 30px;
+		min-height: 400px;
+	}
+
+	.app-footer {
+		padding: 24px;
+		text-align: center;
+		color: var(--el-text-color-secondary);
+
+		.version-info {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			font-size: 14px;
+
+			.dot {
+				color: var(--el-text-color-placeholder);
+			}
+		}
+	}
+
 	.update-dialog {
 		position: fixed;
 		top: 0;
@@ -139,51 +235,35 @@
 		align-items: center;
 		justify-content: center;
 		z-index: 9999;
+		backdrop-filter: blur(4px);
 	}
 
 	.update-content {
-		background: #fff;
+		background: var(--el-bg-color);
 		padding: 30px;
-		border-radius: 8px;
+		border-radius: 12px;
 		text-align: center;
-		min-width: 300px;
+		min-width: 320px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 
 		h3 {
 			margin: 0 0 15px;
-			color: #303133;
+			color: var(--el-text-color-primary);
 		}
 
 		p {
 			margin: 10px 0;
-			color: #606266;
+			color: var(--el-text-color-regular);
 		}
 
 		.contact {
-			color: #909399;
-			font-size: 12px;
+			color: var(--el-text-color-secondary);
+			font-size: 13px;
 			margin-bottom: 20px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			gap: 4px;
 		}
-	}
-
-	.container {
-		padding: 20px;
-		.right {
-			display: flex;
-			flex-direction: column;
-			align-content: center;
-		}
-	}
-
-	.version-tag {
-		position: fixed;
-		right: 10px;
-		bottom: 5px;
-		font-size: 10px;
-		color: #ccc;
-		z-index: 9999;
-		user-select: none;
 	}
 </style>

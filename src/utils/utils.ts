@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
+import * as Icons from '@element-plus/icons-vue';
 import type { TableData, ProcessedData } from '@/types/TableData';
 import { CURRENT_VERSION } from './version';
 let calculatedData: ProcessedData[] = [];
@@ -288,4 +289,14 @@ const addDate = (date: Date, tableData: TableData[]) => {
 const getComponentRoot = (compRef: any) => {
 	return compRef.value?.$el ?? compRef.value;
 };
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getCurrentVersion, confirmVersion };
+
+/**
+ * 获取图标组件
+ * @param name 图标名称
+ * @returns 图标组件
+ */
+const getIcon = (name: string) => {
+	return (Icons as any)[name];
+};
+
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getCurrentVersion, confirmVersion, getIcon };
