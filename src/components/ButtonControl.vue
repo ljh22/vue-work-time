@@ -1,9 +1,9 @@
 <template>
 	<div class="btn-container">
 		<div class="method-selector">
-			<el-radio-group v-model="CalculationMethodType" size="large" @change="handleMethodChange">
-				<el-radio-button :label="1" value="1">计算工作日</el-radio-button>
-				<el-radio-button :label="2" value="2">单独计算周末工时</el-radio-button>
+			<el-radio-group :model-value="CalculationMethodType" size="large" @update:model-value="handleMethodChange">
+				<el-radio-button :label="1" :value="1">计算工作日</el-radio-button>
+				<el-radio-button :label="2" :value="2">单独计算周末工时</el-radio-button>
 			</el-radio-group>
 		</div>
 
