@@ -17,7 +17,7 @@
 				<div class="header-content">
 					<div class="logo-section">
 						<img src="/workTime.png" alt="logo" class="logo-img" />
-						<h1 class="app-title">WorkTime Master</h1>
+						<h1 class="app-title">工时计算工具</h1>
 					</div>
 					<div class="header-actions">
 						<TipsComp

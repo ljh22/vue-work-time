@@ -279,35 +279,6 @@
 	// 从localStorage读取暗黑模式状态，默认为false
 	const darkMode = ref(localStorage.getItem('darkMode') === 'true');
 
-	// 平滑滚动到指定元素
-	const smoothScrollToElement = (element: Element) => {
-		// 计算元素相对于文档顶部的位置
-		const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-		const startPosition = window.scrollY;
-		const distance = elementPosition - startPosition;
-		const duration = 600; // 滚动持续时间
-		const startTime = performance.now();
-
-		const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-		const animate = (currentTime: number) => {
-			const elapsed = currentTime - startTime;
-			const progress = Math.min(elapsed / duration, 1);
-			const easeProgress = easeOutCubic(progress);
-
-			window.scrollTo({
-				top: startPosition + distance * easeProgress,
-				left: 0,
-			});
-
-			if (progress < 1) {
-				requestAnimationFrame(animate);
-			}
-		};
-
-		requestAnimationFrame(animate);
-	};
-
 	// 监听isShowUse变化，自动滚动到使用说明区域
 	watch(
 		() => props.isShowUse,

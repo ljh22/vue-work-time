@@ -60,9 +60,3 @@ export interface Utils {
 	 */
 	getIcon: (name: string) => any;
 }
-	/**
-	 * 标记用户已确认当前版本
-	 * @param version 需要确认的版本号
-	 */
-	confirmVersion: (version: string) => void;
-}

@@ -83,23 +83,27 @@ const updateThemeColor = (newColor: string) => {
 
 	// 生成主题色的各种变体（浅色、深色等）
 	const generateColorVariants = (baseColor: string) => {
-		// 简单的颜色变体生成逻辑
 		const hex = baseColor.replace('#', '');
 		const r = parseInt(hex.substr(0, 2), 16);
 		const g = parseInt(hex.substr(2, 2), 16);
 		const b = parseInt(hex.substr(4, 2), 16);
 
-		// 生成浅色变体
+		// 设置 RGB 变量，有些组件需要
+		document.documentElement.style.setProperty('--el-color-primary-rgb', `${r}, ${g}, ${b}`);
+
+		// 生成浅色变体 light-1 到 light-9
+		// Element Plus 规范: light-3 用于 hover, light-5 用于 active, light-9 最浅
+		// 这里的 i 代表混合白色百分比的 1/10
 		for (let i = 1; i <= 9; i++) {
-			const alpha = i / 10;
-			const lightR = Math.round(r + (255 - r) * (1 - alpha));
-			const lightG = Math.round(g + (255 - g) * (1 - alpha));
-			const lightB = Math.round(b + (255 - b) * (1 - alpha));
+			const ratio = i / 10;
+			const lightR = Math.round(r + (255 - r) * ratio);
+			const lightG = Math.round(g + (255 - g) * ratio);
+			const lightB = Math.round(b + (255 - b) * ratio);
 			const lightColor = `rgb(${lightR}, ${lightG}, ${lightB})`;
 			document.documentElement.style.setProperty(`--el-color-primary-light-${i}`, lightColor);
 		}
 
-		// 生成深色变体
+		// 生成深色变体 dark-2
 		const darkR = Math.round(r * 0.8);
 		const darkG = Math.round(g * 0.8);
 		const darkB = Math.round(b * 0.8);
