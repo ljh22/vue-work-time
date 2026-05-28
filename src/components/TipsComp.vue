@@ -1,31 +1,19 @@
 <template>
 	<div class="header-actions-container">
 		<el-button-group>
-			<el-button 
-				ref="cardHeader1"
-				type="primary" 
-				link 
-				:icon="utils.getIcon('Document')"
-				@click="showToUse"
-			>
+			<el-button ref="cardHeader1" type="primary" link :icon="utils.getIcon('Document')" @click="showToUse">
 				使用说明
 			</el-button>
-			<el-button 
+			<el-button
 				ref="cardContent2"
-				type="primary" 
-				link 
+				type="primary"
+				link
 				:icon="utils.getIcon('CopyDocument')"
 				@click="copyReferenceData"
 			>
 				复制参考数据
 			</el-button>
-			<el-button 
-				ref="cardContent"
-				type="primary" 
-				link 
-				:icon="utils.getIcon('Link')"
-				@click="goToGitee"
-			>
+			<el-button ref="cardContent" type="primary" link :icon="utils.getIcon('Link')" @click="goToGitee">
 				建议/源码
 			</el-button>
 		</el-button-group>
@@ -139,10 +127,12 @@
 			font-weight: 500;
 			font-size: 14px;
 			padding: 8px 12px;
-			
+
 			&:hover {
 				background-color: var(--el-color-primary-light-9);
-				border-radius: 6px;
+				border-radius: 6px !important;
+				color: var(--el-color-primary);
+				box-shadow: 0 0 10px var(--el-color-primary);
 			}
 		}
 	}

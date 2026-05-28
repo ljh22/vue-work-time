@@ -90,8 +90,16 @@
 						<div class="step-detail">
 							<p>打开个人考勤，点击查看打卡数据，随后打开控制台（F12）点到 Network 选项卡，清空请求数据</p>
 							<div class="step-images">
-								<img src="https://foruda.gitee.com/images/1711614780301895326/9c11fc4b_10888693.png" alt="" loading="lazy" />
-								<img src="https://foruda.gitee.com/images/1751190501730420066/a6ddeb8e_10888693.png" alt="" loading="lazy" />
+								<img
+									src="https://foruda.gitee.com/images/1711614780301895326/9c11fc4b_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
+								<img
+									src="https://foruda.gitee.com/images/1751190501730420066/a6ddeb8e_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
 							</div>
 						</div>
 					</div>
@@ -100,8 +108,16 @@
 						<div class="step-detail">
 							<p>选择 50 条数据，点击 getLocSetDataByPage 请求，切换到 Response 标签页</p>
 							<div class="step-images">
-								<img src="https://foruda.gitee.com/images/1751190497927676192/38c3991e_10888693.png" alt="" loading="lazy" />
-								<img src="https://foruda.gitee.com/images/1711615026549164653/9f871844_10888693.png" alt="" loading="lazy" />
+								<img
+									src="https://foruda.gitee.com/images/1751190497927676192/38c3991e_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
+								<img
+									src="https://foruda.gitee.com/images/1711615026549164653/9f871844_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
 							</div>
 						</div>
 					</div>
@@ -110,8 +126,16 @@
 						<div class="step-detail">
 							<p>找到 items 数组，复制整个数组内容即可（带不带后面逗号均可）</p>
 							<div class="step-images">
-								<img src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png" alt="" loading="lazy" />
-								<img src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png" alt="" loading="lazy" />
+								<img
+									src="https://foruda.gitee.com/images/1711615092070250659/a95d1b2c_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
+								<img
+									src="https://foruda.gitee.com/images/1711615148303292328/279ba83a_10888693.png"
+									alt=""
+									loading="lazy"
+								/>
 							</div>
 						</div>
 					</div>
@@ -123,10 +147,10 @@
 		<Transition name="fade">
 			<div class="fixed-close-action" v-if="props.isShowUse">
 				<el-tooltip content="关闭使用说明" placement="left">
-					<el-button 
-						type="danger" 
-						:icon="utils.getIcon('Close')" 
-						circle 
+					<el-button
+						type="danger"
+						:icon="utils.getIcon('Close')"
+						circle
 						@click="handleCloseUse"
 						class="global-close-btn"
 					/>
@@ -291,10 +315,10 @@
 						// 考虑到顶部有 64px 的 sticky header，滚动时需要留出偏移
 						const headerHeight = 80; // 64px header + 一些间距
 						const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-						
+
 						window.scrollTo({
 							top: elementPosition - headerHeight,
-							behavior: 'smooth'
+							behavior: 'smooth',
 						});
 					}
 				});
@@ -418,7 +442,9 @@
 			display: flex;
 			align-items: center;
 			gap: 10px;
-
+			:deep(.el-button) {
+				border-color: var(--el-color-primary);
+			}
 			.label {
 				font-size: 14px;
 				color: var(--el-text-color-regular);
@@ -453,6 +479,13 @@
 			justify-content: space-between;
 			align-items: center;
 			margin-bottom: 16px;
+			&:hover {
+				:deep(.el-button) {
+					span {
+						color: var(--el-color-primary);
+					}
+				}
+			}
 		}
 
 		.time-textarea {
@@ -586,10 +619,11 @@
 
 	.guide-button {
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-		
+
 		&:hover {
 			transform: translateY(-2px);
-			box-shadow: 0 4px 12px var(--el-color-primary-light-5);
+			background: var(--el-color-primary);
+			box-shadow: 0 4px 12px var(--el-color-primary);
 		}
 	}
 
@@ -604,10 +638,12 @@
 		}
 	}
 
-	.fade-enter-active, .fade-leave-active {
+	.fade-enter-active,
+	.fade-leave-active {
 		transition: opacity 0.3s ease;
 	}
-	.fade-enter-from, .fade-leave-to {
+	.fade-enter-from,
+	.fade-leave-to {
 		opacity: 0;
 	}
 
@@ -617,7 +653,8 @@
 	.slide-fade-leave-active {
 		transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 	}
-	.slide-fade-enter-from, .slide-fade-leave-to {
+	.slide-fade-enter-from,
+	.slide-fade-leave-to {
 		transform: translateY(20px);
 		opacity: 0;
 	}

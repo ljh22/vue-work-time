@@ -87,21 +87,24 @@
 			<el-table-column label="操作" width="100" fixed="right">
 				<template #default="scope">
 					<div v-if="isLastRow(scope.$index)" class="action-buttons">
-						<el-button
-							type="primary"
-							:icon="Plus"
-							circle
-							size="small"
-							@click="handleAddNewRecord"
-						/>
-						<el-button
-							v-if="scope.row.isNewlyAdded"
-							type="danger"
-							:icon="Minus"
-							circle
-							size="small"
-							@click="handleDeleteRecord(scope.row)"
-						/>
+						<el-tooltip content="新增一条工时记录" placement="top" effect="light">
+							<el-button
+								type="primary"
+								:icon="Plus"
+								circle
+								size="small"
+								@click="handleAddNewRecord"
+							/>
+						</el-tooltip>
+						<el-tooltip v-if="scope.row.isNewlyAdded" content="删除此条工时记录" placement="top" effect="light">
+							<el-button
+								type="danger"
+								:icon="Minus"
+								circle
+								size="small"
+								@click="handleDeleteRecord(scope.row)"
+							/>
+						</el-tooltip>
 					</div>
 					<span v-else class="empty-placeholder">--</span>
 				</template>
@@ -678,6 +681,9 @@
 		}
 
 		.edit-cell {
+			.el-input__wrapper{
+				padding: 1px 20px;
+			}
 			.display-box {
 				display: flex;
 				align-items: center;
@@ -709,6 +715,9 @@
 			display: flex;
 			justify-content: center;
 			gap: 8px;
+			:deep(.el-button) {
+			    background: var(--el-color-primary);
+			}
 		}
 
 		.empty-placeholder {
