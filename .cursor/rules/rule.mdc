@@ -1,0 +1,281 @@
+---
+alwaysApply: true
+---
+
+
+# Cursor AI Rules - Product & UI Design Skill
+
+---
+
+## 项目信息
+
+- **Skill 名称**: product-ui-skill
+- **Skill 路径**: `./product-ui-skill`
+- **用途**: 为 AI 提供产品经理和高级 UI 设计师的视角
+
+---
+
+## ⚡ 激活状态：默认生效（Always Active）
+
+**此 Skill 默认激活，无需关键词触发。**
+
+```
+任何前端开发任务 → 自动应用产品+UI设计视角
+```
+
+---
+
+## 自动激活规则
+
+当涉及以下任一场景时，**必须自动应用**此 Skill：
+
+### 前端开发（自动激活）
+- 创建/修改任何页面
+- 创建/修改任何组件
+- 创建/修改任何 UI 元素
+- 设计表单/列表/导航
+- 实现任何交互逻辑
+
+### 关键词辅助（优化场景）
+
+仅在优化场景使用关键词：
+- "优化用户体验" → 深入产品设计方法
+- "改进 UI" → 深入 UI 设计规范
+- "设计规范" → 提供设计系统参考
+
+---
+
+## 设计决策要求
+
+### 1. 先思考，再编码
+
+```
+生成任何界面之前，必须思考：
+1. 用户是谁？他们的痛点是什么？
+2. 这个功能的核心价值是什么？
+3. 用户的第一注意力应该在哪里？
+4. 最常用的操作路径是什么？
+5. 可能出现哪些错误/边界情况？
+```
+
+### 2. 设计检查清单
+
+```
+□ 信息架构是否清晰？
+□ 视觉层次是否符合用户阅读习惯？
+□ 核心操作路径是否最短？（≤ 3 步）
+□ 状态是否完整？
+   □ 默认状态
+   □ 加载状态（骨架屏/loading）
+   □ 空状态（引导创建/搜索无结果）
+   □ 错误状态（网络错误/表单错误）
+   □ 成功状态（操作反馈）
+□ 是否考虑了边界情况？
+   □ 长文本（截断/展开）
+   □ 大数据量（分页/虚拟滚动）
+   □ 移动端适配
+□ 是否有一致的视觉语言？
+□ 动效是否自然流畅？（≤ 300ms）
+□ 是否考虑了可访问性？（对比度/焦点顺序）
+```
+
+### 3. 组件设计标准
+
+```
+命名规范：
+- Button → 按钮
+- Input → 输入框
+- Card → 卡片
+- Modal → 弹窗
+- Table → 表格
+- List → 列表
+
+状态覆盖（必须全部实现）：
+- default（默认）
+- hover（悬浮）
+- focus（聚焦）
+- active（按下）
+- disabled（禁用）
+- loading（加载）
+- error（错误）
+- success（成功）
+- empty（空状态）
+```
+
+---
+
+## 代码输出标准
+
+### React 组件标准
+
+```tsx
+// ✅ 好的示例：完整的组件 + 状态覆盖
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+  disabled?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled = false,
+  children,
+  onClick,
+}) => {
+  return (
+    <button
+      className={cn('btn', `btn-${variant}`, `btn-${size}`, { loading, disabled })}
+      disabled={disabled || loading}
+      onClick={onClick}
+    >
+      {loading ? <Spinner /> : children}
+    </button>
+  );
+};
+
+// ❌ 坏的示例：缺少状态、不考虑边界
+const Button = ({ children }) => (
+  <button>{children}</button>
+);
+```
+
+### CSS 规范
+
+```css
+/* ✅ 使用设计系统变量 */
+.button {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ❌ 硬编码值、缺乏动效 */
+.button {
+  height: 40px;
+  padding: 0 16px;
+}
+```
+
+---
+
+## 视觉设计原则
+
+### 优先级排序
+
+```
+1. 功能性（能用）→ 核心功能是否实现
+2. 易用性（好用）→ 操作是否顺畅
+3. 美观性（好看）→ 视觉是否精致
+
+优先级：功能 > 可用性 > 美观
+```
+
+### 视觉层级
+
+```
+第一层级：核心操作/信息
+- 最大的字号（20-24px）
+- 最醒目的颜色（主色）
+- 最优先的位置（左上角/顶部）
+
+第二层级：次要操作/信息
+- 中等字号（14-16px）
+- 次要颜色（灰色）
+- 靠后位置
+
+第三层级：辅助信息
+- 小字号（12px）
+- 浅颜色（#999）
+- 底部或隐藏
+```
+
+### 一致性原则
+
+```
+□ 相似功能使用相似设计
+□ 相同类型元素使用相同样式
+□ 颜色、字体、间距遵循规范
+□ 动效使用相同曲线和时长（200-300ms）
+□ 状态使用相同的视觉语言
+```
+
+---
+
+## 常用组件参考
+
+参考 `product-ui-skill/references/` 下的文档：
+
+1. **product-mindset.md** - 产品经理思维
+   - 用户需求分析
+   - 功能优先级
+   - 体验优化
+
+2. **ui-design.md** - UI 设计规范
+   - 排版规范
+   - 色彩应用
+   - 动效设计
+
+3. **design-system.md** - 设计系统
+   - 色彩系统
+   - 字体系统
+   - 间距系统
+
+4. **ux-patterns.md** - UX 模式库
+   - 表单设计模式
+   - 列表设计模式
+   - 导航设计模式
+   - 反馈设计模式
+   - 登录注册设计
+
+5. **advanced-design.md** - 高级设计规范（精华）
+   - 设计参数系统（DESIGN_VARIANCE、MOTION_INTENSITY）
+   - OKLCH 色彩系统
+   - AI 设计禁区清单
+   - 高级字体排版
+
+6. **a11y-interaction.md** - 无障碍与交互
+   - WCAG 对比度要求
+   - 触摸目标尺寸
+   - 性能优化
+
+---
+
+## AI 设计禁区（重要）
+
+```
+❌ 禁止 Inter 字体 → 用 Geist、Outfit、Satoshi
+❌ 禁止纯黑 #000000 → 用 Off-Black、Zinc-950
+❌ 禁止渐变文字标题 → 用纯色
+❌ 禁止 3 列等宽卡片 → 用 2 列 Zig-Zag
+❌ 禁止 Unsplash 假图 → 用 picsum.photos
+❌ 禁止 John Doe、Sarah Chan 假名
+❌ 禁止 Elevate、Seamless、Unleash 俗套词
+❌ 禁止只移除焦点环 → 保持 :focus-visible
+```
+
+---
+
+## 注意事项
+
+1. **不盲目追求美观**：功能优先，美观辅助
+2. **克制使用渐变/阴影**：克制才能精致
+3. **保持简洁**：能用 3 个元素解决，不用 5 个
+4. **考虑边界**：长文本、大数据、空状态都要处理
+5. **响应式优先**：移动端设计先行
+6. **默认生效**：无需触发，直接应用

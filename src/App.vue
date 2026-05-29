@@ -6,7 +6,14 @@
 				<p>最新版本: {{ newVersion }}</p>
 				<div class="contact">
 					请自行
-					<el-link type="primary" :underline="false" :disabled="downloadDisabled" :loading="downloadLoading" @click="handleDownload">下载</el-link>
+					<el-link
+						type="primary"
+						:underline="false"
+						:disabled="downloadDisabled"
+						:loading="downloadLoading"
+						@click="handleDownload"
+						>下载</el-link
+					>
 					获取最新版本，解压后添加到浏览器插件
 				</div>
 				<el-button type="primary" @click="handleConfirmVersion">我知道了</el-button>
@@ -45,7 +52,9 @@
 				<div class="version-info">
 					<span>Version {{ CURRENT_VERSION }}</span>
 					<span class="dot">·</span>
-					<el-link type="info" :underline="false" href="https://gitee.com/ljh-project/vue-work-time" target="_blank">Gitee</el-link>
+					<el-link type="info" :underline="false" href="https://gitee.com/ljh-project/vue-work-time" target="_blank"
+						>Gitee</el-link
+					>
 				</div>
 			</footer>
 		</div>
@@ -149,8 +158,10 @@
 	}
 
 	.app-header {
-		background-color: var(--el-bg-color);
-		box-shadow: 0 2px 8px var(--app-shadow-color);
+		background-color: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(16px);
+		box-shadow: 0 2px 12px rgba(31, 45, 61, 0.08);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 		padding: 0 20px;
 		height: 64px;
 		display: flex;
@@ -184,6 +195,7 @@
 			font-size: 20px;
 			font-weight: 600;
 			background: linear-gradient(45deg, var(--el-color-primary), #67c23a);
+			background-clip: text;
 			-webkit-background-clip: text;
 			-webkit-text-fill-color: transparent;
 		}
@@ -199,11 +211,35 @@
 	}
 
 	.content-card {
+		background-color: var(--card-bg-color);
+		border: 1px solid var(--el-border-color);
+		border-radius: 14px;
+		box-shadow: 0 12px 32px rgba(31, 45, 61, 0.06);
+		padding: 28px;
+		min-height: 420px;
+	}
+
+	/* Light-mode overrides for common Element components to avoid pure-white panels */
+	body:not(.dark) .el-card,
+	body:not(.dark) .el-table,
+	body:not(.dark) .el-table .el-table__header,
+	body:not(.dark) .el-dialog__body,
+	body:not(.dark) .el-popover__reference,
+	body:not(.dark) .el-input,
+	body:not(.dark) .el-select {
+		background-color: var(--card-bg-color) !important;
+		border-color: var(--el-border-color) !important;
+	}
+
+	html.dark .app-header {
+		background-color: rgba(20, 20, 20, 0.9);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	html.dark .content-card {
 		background-color: var(--el-bg-color);
-		border-radius: 12px;
-		box-shadow: 0 4px 16px var(--app-shadow-color);
-		padding: 30px;
-		min-height: 400px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 24px 64px rgba(0, 0, 0, 0.36);
 	}
 
 	.app-footer {
