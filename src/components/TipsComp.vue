@@ -123,16 +123,40 @@
 		align-items: center;
 		gap: 8px;
 
+		:deep(.el-button-group) {
+			display: flex;
+			gap: 6px;
+			padding: 4px;
+			border-radius: 12px;
+			background: var(--el-fill-color-light);
+			border: 1px solid var(--el-border-color-light);
+		}
+
 		:deep(.el-button) {
 			font-weight: 500;
 			font-size: 14px;
-			padding: 8px 12px;
+			padding: 8px 11px;
+			border: 0;
+			border-radius: 9px !important;
+			background: transparent;
 
 			&:hover {
-				background-color: var(--el-color-primary-light-9);
-				border-radius: 6px !important;
+				background-color: var(--app-surface-solid);
 				color: var(--el-color-primary);
-				box-shadow: 0 0 10px var(--el-color-primary);
+				box-shadow: 0 6px 14px var(--app-shadow-color);
+			}
+		}
+
+		@media (max-width: 760px) {
+			width: 100%;
+
+			:deep(.el-button-group) {
+				width: 100%;
+				flex-wrap: wrap;
+			}
+
+			:deep(.el-button) {
+				flex: 1 1 auto;
 			}
 		}
 	}

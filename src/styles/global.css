@@ -16,23 +16,28 @@ a {
 
 /* 明亮模式样式 */
 html {
-	--app-bg-color: #eef3f8;
-	--app-text-color: #2f3a4a;
-	--app-border-color: #d8dee8;
-	--app-shadow-color: rgba(0, 0, 0, 0.08);
+	--app-bg-color: #f5f7fb;
+	--app-text-color: #1f2937;
+	--app-border-color: #d8e0eb;
+	--app-shadow-color: rgba(15, 23, 42, 0.08);
+	--app-shadow-strong: 0 18px 50px rgba(15, 23, 42, 0.11);
+	--app-surface-color: rgba(255, 255, 255, 0.88);
+	--app-surface-solid: #ffffff;
+	--app-muted-surface: #f1f5f9;
+	--app-accent-soft: #e8f1ff;
 	--el-bg-color: #ffffff;
-	--el-bg-color-page: #f4f8fc;
-	--el-text-color-primary: #24303f;
-	--el-text-color-regular: #5c6d82;
-	--el-text-color-secondary: #7f8d9f;
-	--el-text-color-placeholder: #99a6b5;
-	--el-border-color: #d9e2ec;
-	--el-border-color-light: #e9eef4;
-	--el-border-color-lighter: #f2f6fb;
+	--el-bg-color-page: #f5f7fb;
+	--el-text-color-primary: #1f2937;
+	--el-text-color-regular: #4b5563;
+	--el-text-color-secondary: #6b7280;
+	--el-text-color-placeholder: #9ca3af;
+	--el-border-color: #d8e0eb;
+	--el-border-color-light: #e3e9f2;
+	--el-border-color-lighter: #edf2f7;
 	--el-fill-color: #ffffff;
-	--el-fill-color-light: #f7faff;
-	--el-fill-color-lighter: #f1f5fb;
-	--card-bg-color: #f7f9fc;
+	--el-fill-color-light: #f6f8fb;
+	--el-fill-color-lighter: #eef3f8;
+	--card-bg-color: #ffffff;
 }
 
 /* 暗黑模式样式 */
@@ -64,6 +69,12 @@ html.dark {
 	--app-text-color: #e5eaf3;
 	--app-border-color: #4c4d4f;
 	--app-shadow-color: rgba(0, 0, 0, 0.3);
+	--app-shadow-strong: 0 22px 60px rgba(0, 0, 0, 0.38);
+	--app-surface-color: rgba(26, 27, 30, 0.9);
+	--app-surface-solid: #1b1c1f;
+	--app-muted-surface: #202225;
+	--app-accent-soft: rgba(64, 158, 255, 0.14);
+	--card-bg-color: #1b1c1f;
 }
 
 /* 应用全局背景 */
@@ -71,9 +82,8 @@ body {
 	min-height: 100vh;
 	background-color: var(--app-bg-color);
 	background-image:
-		radial-gradient(circle at top left, rgba(56, 139, 255, 0.12), transparent 28%),
-		radial-gradient(circle at 85% 15%, rgba(102, 187, 106, 0.08), transparent 20%),
-		linear-gradient(180deg, #f9fbfe 0%, #eef3f8 100%);
+		linear-gradient(135deg, rgba(64, 158, 255, 0.08) 0%, rgba(16, 185, 129, 0.05) 34%, transparent 68%),
+		linear-gradient(180deg, #fbfdff 0%, var(--app-bg-color) 52%, #eef2f7 100%);
 	color: var(--app-text-color);
 	font-family:
 		'Inter',
@@ -109,9 +119,32 @@ body {
 
 /* 确保所有容器都使用主题色 */
 #app {
-	background-color: var(--app-bg-color);
+	background-color: transparent;
 	color: var(--app-text-color);
 	min-height: 100vh;
+}
+
+html.dark body {
+	background-image:
+		linear-gradient(135deg, rgba(64, 158, 255, 0.12) 0%, rgba(16, 185, 129, 0.08) 32%, transparent 68%),
+		linear-gradient(180deg, #101114 0%, #0b0c0f 100%);
+}
+
+.el-button {
+	font-weight: 600;
+}
+
+.el-button--primary {
+	box-shadow: 0 8px 18px rgba(64, 158, 255, 0.22);
+}
+
+.el-card,
+.el-table,
+.el-input__wrapper,
+.el-textarea__inner,
+.el-date-editor.el-input__wrapper,
+.el-select__wrapper {
+	border-color: var(--el-border-color-light);
 }
 
 .step-font {

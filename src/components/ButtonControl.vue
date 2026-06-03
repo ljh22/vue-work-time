@@ -145,15 +145,55 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 24px;
+		gap: 18px;
 		width: 100%;
-		padding: 20px 0;
+		padding: 8px 0 0;
 	}
 
 	.method-selector {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+
+		:deep(.el-radio-group) {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			width: min(100%, 560px);
+			padding: 4px;
+			border-radius: 12px;
+			background: var(--el-fill-color-light);
+			border: 1px solid var(--el-border-color-light);
+			overflow: hidden;
+		}
+
+		:deep(.el-radio-button) {
+			--el-radio-button-checked-bg-color: var(--el-color-primary);
+			--el-radio-button-checked-border-color: var(--el-color-primary);
+			--el-radio-button-checked-text-color: #fff;
+			margin: 0;
+		}
+
+		:deep(.el-radio-button::before) {
+			display: none;
+		}
+
 		:deep(.el-radio-button__inner) {
-			padding: 12px 24px;
+			width: 100%;
+			padding: 12px 16px;
 			font-size: 15px;
+			border: 0 !important;
+			border-radius: 9px !important;
+			background: transparent;
+			box-shadow: none !important;
+			outline: 0;
+		}
+
+		:deep(.el-radio-button:first-child .el-radio-button__inner) {
+			border-left: 0 !important;
+		}
+
+		:deep(.el-radio-button.is-active .el-radio-button__inner) {
+			box-shadow: none !important;
 		}
 	}
 
@@ -163,16 +203,17 @@
 		align-items: center;
 		gap: 20px;
 		width: 100%;
-		max-width: 500px;
+		max-width: 560px;
 	}
 
 	.holiday-picker {
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		background-color: var(--el-fill-color-light);
-		padding: 8px 16px;
-		border-radius: 8px;
+		background-color: var(--app-muted-surface);
+		padding: 12px 14px;
+		border-radius: 12px;
+		border: 1px solid var(--el-border-color-light);
 		width: 100%;
 		box-sizing: border-box;
 
@@ -192,8 +233,8 @@
 		height: 48px;
 		font-size: 16px;
 		font-weight: 600;
-		letter-spacing: 1px;
-		border-radius: 8px;
+		letter-spacing: 0;
+		border-radius: 12px;
 		transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
 		&:hover {
@@ -212,5 +253,20 @@
 	.fade-enter-from, .fade-leave-to {
 		opacity: 0;
 		transform: translateY(10px);
+	}
+
+	@media (max-width: 620px) {
+		.method-selector :deep(.el-radio-group) {
+			grid-template-columns: 1fr;
+		}
+
+		.holiday-picker {
+			align-items: stretch;
+			flex-direction: column;
+
+			.picker-label {
+				white-space: normal;
+			}
+		}
 	}
 </style>

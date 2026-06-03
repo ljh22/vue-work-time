@@ -42,7 +42,7 @@
 		<div class="input-section">
 			<div class="input-header">
 				<h2 class="section-title">数据导入</h2>
-				<el-button type="primary" link @click="handleShowToUse">查看获取教程</el-button>
+				<el-button type="primary" link class="tutorial-link" @click="handleShowToUse">查看获取教程</el-button>
 			</div>
 			<el-input
 				ref="textarea"
@@ -427,21 +427,28 @@
 	.modal-container {
 		display: flex;
 		flex-direction: column;
-		gap: 30px;
+		gap: 24px;
 	}
 
 	.settings-bar {
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
-		gap: 24px;
-		padding-bottom: 20px;
-		border-bottom: 1px solid var(--el-border-color-lighter);
+		flex-wrap: wrap;
+		gap: 12px;
+		padding: 12px;
+		background: var(--app-muted-surface);
+		border: 1px solid var(--el-border-color-light);
+		border-radius: 12px;
 
 		.setting-item {
 			display: flex;
 			align-items: center;
-			gap: 10px;
+			gap: 9px;
+			padding: 7px 10px;
+			border-radius: 10px;
+			background: var(--app-surface-solid);
+			border: 1px solid var(--el-border-color-lighter);
 			:deep(.el-button) {
 				border-color: var(--el-color-primary);
 			}
@@ -453,12 +460,12 @@
 	}
 
 	.section-title {
-		font-size: 18px;
-		font-weight: 600;
+		font-size: 19px;
+		font-weight: 700;
 		margin: 0;
 		color: var(--el-text-color-primary);
 		position: relative;
-		padding-left: 12px;
+		padding-left: 14px;
 
 		&::before {
 			content: '';
@@ -466,18 +473,24 @@
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%);
-			width: 4px;
-			height: 18px;
+			width: 5px;
+			height: 20px;
 			background-color: var(--el-color-primary);
-			border-radius: 2px;
+			border-radius: 999px;
 		}
 	}
 
 	.input-section {
+		padding: 22px;
+		border-radius: 14px;
+		background: var(--app-surface-solid);
+		border: 1px solid var(--el-border-color-light);
+
 		.input-header {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			gap: 14px;
 			margin-bottom: 16px;
 			&:hover {
 				:deep(.el-button) {
@@ -486,20 +499,41 @@
 					}
 				}
 			}
+
+			.tutorial-link {
+				padding: 6px 10px;
+				border-radius: 8px;
+				background: transparent;
+				box-shadow: none;
+
+				&:hover,
+				&:focus {
+					background: var(--app-accent-soft);
+					box-shadow: none;
+				}
+
+				:deep(span) {
+					color: var(--el-color-primary);
+				}
+			}
 		}
 
 		.time-textarea {
 			margin-bottom: 20px;
 
 			:deep(.el-textarea__inner) {
-				border-radius: 8px;
-				padding: 12px;
-				font-family: monospace;
+				border-radius: 12px;
+				padding: 15px;
+				font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+				font-size: 13px;
+				line-height: 1.65;
 				transition: all 0.3s;
-				background-color: var(--el-fill-color-blank);
+				background-color: var(--el-fill-color-light);
+				border-color: var(--el-border-color-light);
 
 				&:focus {
-					box-shadow: 0 0 0 2px var(--el-color-primary-light-8);
+					background-color: var(--app-surface-solid);
+					box-shadow: 0 0 0 3px var(--el-color-primary-light-8);
 				}
 			}
 		}
@@ -511,6 +545,10 @@
 	}
 
 	.result-section {
+		padding: 22px;
+		border-radius: 14px;
+		background: var(--app-surface-solid);
+		border: 1px solid var(--el-border-color-light);
 		animation: fadeInUp 0.5s ease-out;
 
 		.section-header {
@@ -519,12 +557,12 @@
 	}
 
 	.how-to-use-box {
-		background-color: var(--el-fill-color-lighter);
-		border-radius: 12px;
+		background-color: var(--app-surface-solid);
+		border-radius: 14px;
 		padding: 24px;
-		margin-top: 20px;
 		border: 1px solid var(--el-border-color-light);
-		position: relative; // 确保可以相对定位
+		position: relative;
+		box-shadow: 0 10px 24px var(--app-shadow-color);
 
 		.guide-header {
 			display: flex;
@@ -535,6 +573,7 @@
 			h3 {
 				margin: 0;
 				font-size: 18px;
+				color: var(--el-text-color-primary);
 			}
 		}
 
@@ -549,11 +588,11 @@
 			gap: 16px;
 
 			.step-num {
-				width: 28px;
-				height: 28px;
+				width: 30px;
+				height: 30px;
 				background-color: var(--el-color-primary);
 				color: white;
-				border-radius: 50%;
+				border-radius: 10px;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -578,9 +617,9 @@
 					img {
 						max-width: 100%;
 						height: auto;
-						border-radius: 8px;
-						border: 1px solid var(--el-border-color-lighter);
-						box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+						border-radius: 10px;
+						border: 1px solid var(--el-border-color-light);
+						box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 					}
 				}
 			}
@@ -595,12 +634,12 @@
 		z-index: 2000;
 
 		.global-close-btn {
-			width: 56px;
-			height: 56px;
-			font-size: 24px;
-			box-shadow: 0 4px 16px rgba(var(--el-color-danger-rgb), 0.3);
+			width: 48px;
+			height: 48px;
+			font-size: 22px;
+			box-shadow: 0 10px 24px rgba(239, 68, 68, 0.25);
 			transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-			border: 2px solid white;
+			border: 2px solid var(--app-surface-solid);
 
 			&:hover {
 				transform: scale(1.1) rotate(90deg);
@@ -662,6 +701,34 @@
 	:deep(.el-switch) {
 		&.is-checked .el-switch__core {
 			background-color: var(--el-color-primary);
+		}
+	}
+
+	@media (max-width: 760px) {
+		.settings-bar {
+			justify-content: flex-start;
+		}
+
+		.input-section,
+		.result-section,
+		.how-to-use-box {
+			padding: 16px;
+		}
+
+		.input-section .input-header {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.guide-step {
+			flex-direction: column;
+		}
+
+		.fixed-close-action {
+			right: 14px;
+			bottom: 18px;
+			top: auto;
+			transform: none;
 		}
 	}
 </style>

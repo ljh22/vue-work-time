@@ -14,7 +14,7 @@
 				<div class="value danger">{{ beInDebtHours }} <span class="unit">小时</span></div>
 			</el-card>
 			<el-card shadow="never" class="summary-card success" v-else>
-				<div class="label">工时达成</div>
+				<div class="label">工时超出</div>
 				<div class="value">{{ Math.abs(beInDebtHours) }} <span class="unit">小时</span></div>
 			</el-card>
 		</div>
@@ -609,23 +609,24 @@
 
 <style scoped lang="scss">
 	.table-container {
-		margin-top: 20px;
+		margin-top: 6px;
 	}
 
 	.summary-cards {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 20px;
+		gap: 14px;
 		margin-bottom: 24px;
 
 		.summary-card {
 			border-radius: 12px;
-			border: 1px solid var(--el-border-color-lighter);
+			border: 1px solid var(--el-border-color-light);
 			transition: all 0.3s;
+			background: linear-gradient(180deg, var(--app-surface-solid), var(--el-fill-color-light));
 
 			&:hover {
 				transform: translateY(-2px);
-				box-shadow: 0 4px 12px var(--app-shadow-color);
+				box-shadow: 0 10px 24px var(--app-shadow-color);
 			}
 
 			.label {
@@ -635,9 +636,10 @@
 			}
 
 			.value {
-				font-size: 24px;
-				font-weight: bold;
+				font-size: 26px;
+				font-weight: 800;
 				color: var(--el-text-color-primary);
+				line-height: 1.1;
 
 				.unit {
 					font-size: 14px;
@@ -664,9 +666,18 @@
 	}
 
 	.custom-table {
-		border-radius: 8px;
+		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+		border: 1px solid var(--el-border-color-light);
+		box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+
+		:deep(.el-table__row) {
+			transition: background-color 0.18s ease;
+		}
+
+		:deep(.el-table__cell) {
+			padding: 10px 0;
+		}
 
 		:deep(.el-table__inner-wrapper) {
 			&::before {
@@ -677,35 +688,76 @@
 		:deep(.el-table__header) {
 			th {
 				background-color: var(--el-fill-color-light) !important;
+				font-size: 13px;
 			}
 		}
 
 		.edit-cell {
-			.el-input__wrapper{
-				padding: 1px 20px;
+			width: 100%;
+			min-height: 34px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 1.4;
+
+			:deep(.el-input) {
+				width: 100%;
+				height: 34px;
+				font: inherit;
 			}
+
+			:deep(.el-input__wrapper) {
+				width: 100%;
+				min-height: 34px;
+				padding: 0 10px;
+				border-radius: 8px;
+				box-sizing: border-box;
+			}
+
+			:deep(.el-input__inner) {
+				height: 32px;
+				font: inherit;
+				line-height: 32px;
+				text-align: center;
+			}
+
 			.display-box {
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				gap: 8px;
+				width: 100%;
 				cursor: pointer;
-				padding: 4px 8px;
-				border-radius: 4px;
-				transition: background-color 0.2s;
+				min-height: 34px;
+				padding: 0 10px;
+				border-radius: 8px;
+				box-sizing: border-box;
+				font: inherit;
+				line-height: 34px;
+				transition:
+					background-color 0.2s,
+					box-shadow 0.2s;
 
 				&:hover {
-					background-color: var(--el-fill-color-light);
+					background-color: var(--app-accent-soft);
+					box-shadow: inset 0 0 0 1px var(--el-color-primary-light-7);
 					
 					.edit-icon {
 						opacity: 1;
 					}
 				}
 
+				span {
+					flex: 0 1 auto;
+				}
+
 				.edit-icon {
 					font-size: 14px;
 					color: var(--el-color-primary);
-					opacity: 0;
+					opacity: 0.45;
+					flex-shrink: 0;
 					transition: opacity 0.2s;
 				}
 			}
@@ -716,7 +768,7 @@
 			justify-content: center;
 			gap: 8px;
 			:deep(.el-button) {
-			    background: var(--el-color-primary);
+				background: var(--el-color-primary);
 			}
 		}
 
@@ -729,6 +781,13 @@
 		td {
 			background-color: var(--el-fill-color-lighter) !important;
 			color: var(--el-text-color-primary);
+			font-weight: 700;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.summary-cards {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

@@ -23,8 +23,13 @@
 			<header class="app-header">
 				<div class="header-content">
 					<div class="logo-section">
-						<img src="/workTime.png" alt="logo" class="logo-img" />
-						<h1 class="app-title">工时计算工具</h1>
+						<div class="logo-mark">
+							<img src="/workTime.png" alt="logo" class="logo-img" />
+						</div>
+						<div class="title-group">
+							<h1 class="app-title">工时计算工具</h1>
+							<span class="app-subtitle">考勤数据解析与月度工时核对</span>
+						</div>
 					</div>
 					<div class="header-actions">
 						<TipsComp
@@ -154,16 +159,16 @@
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--el-bg-color-page);
+		background-color: transparent;
 	}
 
 	.app-header {
-		background-color: rgba(255, 255, 255, 0.92);
-		backdrop-filter: blur(16px);
-		box-shadow: 0 2px 12px rgba(31, 45, 61, 0.08);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-		padding: 0 20px;
-		height: 64px;
+		background-color: var(--app-surface-color);
+		backdrop-filter: blur(18px);
+		box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+		border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+		padding: 0 24px;
+		min-height: 72px;
 		display: flex;
 		align-items: center;
 		position: sticky;
@@ -172,7 +177,7 @@
 	}
 
 	.header-content {
-		max-width: 1200px;
+		max-width: 1280px;
 		width: 100%;
 		margin: 0 auto;
 		display: flex;
@@ -183,63 +188,69 @@
 	.logo-section {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 14px;
 
-		.logo-img {
-			width: 32px;
-			height: 32px;
+		.logo-mark {
+			width: 44px;
+			height: 44px;
+			display: grid;
+			place-items: center;
+			border-radius: 12px;
+			background: linear-gradient(135deg, var(--el-color-primary-light-8), #ecfdf5);
+			border: 1px solid rgba(64, 158, 255, 0.2);
+			box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+
+			.logo-img {
+				width: 28px;
+				height: 28px;
+			}
+		}
+
+		.title-group {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
 		}
 
 		.app-title {
 			margin: 0;
 			font-size: 20px;
-			font-weight: 600;
-			background: linear-gradient(45deg, var(--el-color-primary), #67c23a);
-			background-clip: text;
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
+			line-height: 1.2;
+			font-weight: 700;
+			color: var(--el-text-color-primary);
+		}
+
+		.app-subtitle {
+			font-size: 12px;
+			color: var(--el-text-color-secondary);
 		}
 	}
 
 	.main-container {
 		flex: 1;
-		padding: 40px 20px;
-		max-width: 1200px;
+		padding: 28px 24px 18px;
+		max-width: 1280px;
 		width: 100%;
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
 
 	.content-card {
-		background-color: var(--card-bg-color);
-		border: 1px solid var(--el-border-color);
-		border-radius: 14px;
-		box-shadow: 0 12px 32px rgba(31, 45, 61, 0.06);
-		padding: 28px;
+		background-color: var(--app-surface-color);
+		border: 1px solid rgba(148, 163, 184, 0.24);
+		border-radius: 18px;
+		box-shadow: var(--app-shadow-strong);
+		padding: 26px;
 		min-height: 420px;
 	}
 
-	/* Light-mode overrides for common Element components to avoid pure-white panels */
-	body:not(.dark) .el-card,
-	body:not(.dark) .el-table,
-	body:not(.dark) .el-table .el-table__header,
-	body:not(.dark) .el-dialog__body,
-	body:not(.dark) .el-popover__reference,
-	body:not(.dark) .el-input,
-	body:not(.dark) .el-select {
-		background-color: var(--card-bg-color) !important;
-		border-color: var(--el-border-color) !important;
-	}
-
 	html.dark .app-header {
-		background-color: rgba(20, 20, 20, 0.9);
 		border-color: rgba(255, 255, 255, 0.08);
 	}
 
 	html.dark .content-card {
 		background-color: var(--el-bg-color);
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: 0 24px 64px rgba(0, 0, 0, 0.36);
 	}
 
 	.app-footer {
@@ -275,12 +286,13 @@
 	}
 
 	.update-content {
-		background: var(--el-bg-color);
+		background: var(--app-surface-solid);
 		padding: 30px;
-		border-radius: 12px;
+		border-radius: 16px;
 		text-align: center;
 		min-width: 320px;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+		border: 1px solid var(--el-border-color-light);
+		box-shadow: var(--app-shadow-strong);
 
 		h3 {
 			margin: 0 0 15px;
@@ -300,6 +312,30 @@
 			align-items: center;
 			justify-content: center;
 			gap: 4px;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.app-header {
+			padding: 12px 16px;
+		}
+
+		.header-content {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.header-actions {
+			width: 100%;
+		}
+
+		.main-container {
+			padding: 22px 14px 14px;
+		}
+
+		.content-card {
+			padding: 16px;
+			border-radius: 14px;
 		}
 	}
 </style>
