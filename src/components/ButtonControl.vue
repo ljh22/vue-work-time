@@ -18,13 +18,10 @@
 </template>
 
 <script setup lang="ts">
-	import { inject, ref, watch } from 'vue';
-	import type { Utils } from '@/types/utils';
+	import { ref, watch } from 'vue';
 	import type { TableData } from '@/types/TableData';
 	import { ElMessage } from 'element-plus';
 
-	// 注入全局工具
-	const utils = inject<Utils>('$utils')!;
 	// 定义计算方式
 	const CalculationMethodType = ref<number>(-1);
 
