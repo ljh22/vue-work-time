@@ -126,6 +126,7 @@
 	import { Edit, Plus, Minus } from '@element-plus/icons-vue';
 	import { ElMessage, ElTooltip } from 'element-plus';
 	import dayjs from 'dayjs';
+	import { getHolidayMap, isWorkday } from '@/utils/holiday';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
 
@@ -137,10 +138,6 @@
 	const props = defineProps({
 		showTableInitData: {
 			type: Array as () => Array<TableData>,
-			default: () => [],
-		},
-		showTableDataNew: {
-			type: Array as () => Array<ProcessedData>,
 			default: () => [],
 		},
 		CalculationMethodType: {
@@ -158,8 +155,6 @@
 	const beInDebtHours = ref<number>(0); // 所欠工时
 	const checkInInputRef = ref<any>(null);
 	const checkOutInputRef = ref<any>(null);
-	const isHaveNewProcessedData = ref<boolean>(false); // 是否有新的处理数据
-	const fullTableData = ref<TableData[]>([]); // 保存完整数据（包括添加的法定节假日）
 
 	// 验证时间格式是否正确
 	const validateTimeFormat = (timeStr: string): boolean => {
@@ -193,14 +188,20 @@
 		}
 	};
 
+	// 竞态守卫：确保只有最后一次触发的结果会被应用
+	let watchToken = 0;
 	watch(
 		[() => props.showTableInitData, () => props.CalculationMethodType],
-		([newData, newType]) => {
+		async ([newData, newType]) => {
+			const token = ++watchToken;
+			// 获取数据年份的法定节假日数据（含调休上班日）
+			const year = newData.length > 0 ? dayjs(newData[0].dt).year() : dayjs().year();
+			const holidayMap = await getHolidayMap(year);
+			// 如果等待期间又触发了新的数据变化，则丢弃本次结果
+			if (token !== watchToken) return;
 			// 始终根据原始数据重新计算，确保编辑后的数据能正确更新
-			const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType);
+			const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType, holidayMap);
 			tableData.value = processedData;
-			fullTableData.value = [...newData];
-			isHaveNewProcessedData.value = props.showTableDataNew.length > 0;
 		},
 		{ deep: true, immediate: true },
 	);
@@ -488,20 +489,19 @@
 
 	// 计算下一个工作日的日期
 	// 如果已有数据，基于最后日期计算；否则基于今天计算
-	const calculateNextWorkDay = (baseDate?: string): string => {
+	// 会跳过周末以及法定节假日，同时正确处理调休上班的周末
+	const calculateNextWorkDay = async (baseDate?: string): Promise<string> => {
 		// 如果有基础日期，使用基础日期；否则使用今天
 		const startDate = baseDate ? dayjs(baseDate) : dayjs();
-		const tomorrow = startDate.add(1, 'day');
-		const dayOfWeek = tomorrow.day(); // 0=周日, 6=周六
+		// 获取对应年份的法定节假日数据
+		const holidayMap = await getHolidayMap(startDate.year());
 
-		// 如果明天是周六(6)或周日(0)，则跳到下周一
-		let targetDate = tomorrow;
-		if (dayOfWeek === 6) {
-			// 周六，跳到下周一（加2天）
-			targetDate = startDate.add(3, 'day');
-		} else if (dayOfWeek === 0) {
-			// 周日，跳到下周一（加1天）
-			targetDate = startDate.add(2, 'day');
+		let targetDate = startDate.add(1, 'day');
+		// 向后查找，最多查找 60 天，避免极端情况下死循环
+		let guard = 0;
+		while (!isWorkday(targetDate.format('YYYY-MM-DD'), holidayMap) && guard < 60) {
+			targetDate = targetDate.add(1, 'day');
+			guard++;
 		}
 
 		return targetDate.format('YYYY-MM-DD');
@@ -528,7 +528,7 @@
 	};
 
 	// 新增工时记录
-	const handleAddNewRecord = () => {
+	const handleAddNewRecord = async () => {
 		if (props.showTableInitData.length === 0) {
 			ElMessage.warning('请先解析数据');
 			return;
@@ -546,7 +546,7 @@
 		const lastDate = uniqueDates[uniqueDates.length - 1];
 
 		// 基于最后日期计算下一个工作日
-		const targetDate = calculateNextWorkDay(lastDate);
+		const targetDate = await calculateNextWorkDay(lastDate);
 
 		// 检查新增日期是否跨月
 		const targetMonth = dayjs(targetDate).format('YYYY-MM');

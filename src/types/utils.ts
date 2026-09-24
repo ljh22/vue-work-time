@@ -21,14 +21,7 @@ export interface Utils {
 	 * @param tableData 表格数据
 	 * @returns 处理后的数据
 	 */
-	firstProcessingTableData: (tableData: TableData[], CalculationMethodType: number) => ProcessedData[];
-	/**
-	 * 添加指定日期的打卡记录
-	 * @param date 指定日期
-	 * @param tableData 表格数据
-	 * @returns
-	 */
-	addDate: (date: Date, tableData: TableData[]) => ProcessedData[];
+	firstProcessingTableData: (tableData: TableData[], CalculationMethodType: number, holidayMap?: Map<string, boolean>) => ProcessedData[];
 	/**
 	 * 获取组件根DOM的方法
 	 * @param compRef  组件引用

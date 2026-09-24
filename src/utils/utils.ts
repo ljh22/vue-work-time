@@ -3,7 +3,6 @@ import { ElMessage } from 'element-plus';
 import * as Icons from '@element-plus/icons-vue';
 import type { TableData, ProcessedData } from '@/types/TableData';
 import { CURRENT_VERSION } from './version';
-let calculatedData: ProcessedData[] = [];
 
 /**
  * 获取当前版本号
@@ -122,7 +121,11 @@ const updateThemeColor = (newColor: string) => {
  * @param tableData 表格数据
  * @returns 处理后的数据
  */
-const firstProcessingTableData = (tableData: TableData[], CalculationMethodType: number): ProcessedData[] => {
+const firstProcessingTableData = (
+	tableData: TableData[],
+	CalculationMethodType: number,
+	holidayMap: Map<string, boolean> = new Map(),
+): ProcessedData[] => {
 	console.log('原始数据: ', tableData);
 
 	// 按日期分组打卡记录
@@ -209,81 +212,17 @@ const firstProcessingTableData = (tableData: TableData[], CalculationMethodType:
 	processedData = processedData.filter(item => {
 		const date = dayjs(item.dt).toDate();
 		const isSelectedType = CalculationMethodType === 1 ? !isWeekend(date) : isWeekend(date);
-		// 保留选择类型的日期，或者标记为法定节假日的日期
-		return isSelectedType || item.isHoliday;
+		// 调休上班日（isOffDay=false）即使落在周末，也按工作日纳入计算
+		const isMakeUpWorkday = holidayMap.get(item.dt) === false;
+		// 保留选择类型的日期、标记为法定节假日的日期，以及计算工作日模式下的调休上班日
+		return isSelectedType || item.isHoliday || (CalculationMethodType === 1 && isMakeUpWorkday);
 	});
 
 	// 按日期排序
 	processedData.sort((a, b) => new Date(a.dt).getTime() - new Date(b.dt).getTime());
-	calculatedData = processedData;
 
 	// console.log('处理后的数据: ', processedData);
 	return processedData;
-};
-/**
- * 添加指定日期的打卡记录
- * @param date 指定日期
- * @param tableData 表格数据
- * @returns
- */
-const addDate = (date: Date, tableData: TableData[]) => {
-	const chooseDate = dayjs(date).format('YYYY-MM-DD');
-	// 把tableData中符合chooseDate的按日期分组
-	const groupedByDate = tableData.reduce(
-		(acc, record) => {
-			// 只处理与选择日期相同的记录
-			if (record.dt === chooseDate) {
-				if (!acc[record.dt]) {
-					acc[record.dt] = [];
-				}
-				acc[record.dt].push(record);
-			}
-			return acc;
-		},
-		{} as Record<string, TableData[]>,
-	);
-	// 将分组后的数据转换为指定格式的对象
-	if (Object.keys(groupedByDate).length > 0) {
-		const dayRecords = groupedByDate[chooseDate];
-
-		// 找到上班打卡记录 (type='1')
-		const clockInRecord = dayRecords.find(record => record.type === '1');
-		// 找到下班打卡记录 (type='2')
-		const clockOutRecord = dayRecords.find(record => record.type === '2');
-
-		let workHours = 0; // 有效工作小时数
-		let beInDebtHours = 0; // 欠工小时数
-
-		if (clockInRecord && clockOutRecord) {
-			const clockInTime = dayjs(clockInRecord.checktime);
-			const clockOutTime = dayjs(clockOutRecord.checktime);
-			const totalHours = clockOutTime.diff(clockInTime, 'hour', true);
-
-			// 判断clockOutTime下班时间是否在17:30到18:00之间
-			if (clockOutTime.hour() >= 17 && clockOutTime.hour() < 18) {
-				// 如果在这个区间，则计算出超出17:30到18:00的时间小时
-				const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30), 'hour', true);
-				// 随后，从总小时数中减去超出的小时数和午休时间1.5小时，得到实际工作小时数
-				workHours = totalHours - exceedHours - 1.5;
-			} else {
-				workHours = totalHours - 1.5 - 0.5;
-			}
-			beInDebtHours = 8 - workHours;
-		}
-
-		const processedRecord = {
-			dt: chooseDate,
-			validHours: workHours,
-			beInDebtHours: beInDebtHours,
-			empName: clockInRecord?.empName || clockOutRecord?.empName || '',
-			checkInTime: clockInRecord?.checktime || '未打卡',
-			checkOutTime: clockOutRecord?.checktime || '未打卡',
-			isShowCheckInEdit: false,
-			isShowCheckOutEdit: false,
-		};
-		calculatedData.push(processedRecord);
-		return calculatedData.sort((a, b) => new Date(a.dt).getTime() - new Date(b.dt).getTime());
-	}
 };
 /**
  * 获取组件根DOM的方法
@@ -303,4 +242,4 @@ const getIcon = (name: string) => {
 	return (Icons as any)[name];
 };
 
-export default { isMonthExceed, updateThemeColor, firstProcessingTableData, addDate, getComponentRoot, checkVersionUpdate, getCurrentVersion, confirmVersion, getIcon };
+export default { isMonthExceed, updateThemeColor, firstProcessingTableData, getComponentRoot, checkVersionUpdate, getCurrentVersion, confirmVersion, getIcon };
