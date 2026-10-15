@@ -15,7 +15,7 @@
 			</el-card>
 			<el-card shadow="never" class="summary-card success" v-else>
 				<div class="label">工时超出</div>
-				<div class="value">{{ Math.abs(beInDebtHours) }} <span class="unit">小时</span></div>
+				<div class="value success">{{ Math.abs(beInDebtHours) }} <span class="unit">小时</span></div>
 			</el-card>
 		</div>
 
@@ -650,6 +650,10 @@
 
 				&.danger {
 					color: var(--el-color-danger);
+				}
+
+				&.success {
+					color: var(--el-color-success);
 				}
 			}
 
