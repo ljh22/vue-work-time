@@ -67,14 +67,22 @@ export const firstProcessingTableData = (
 		const clockInTime = dayjs(clockInRecord!.checktime);
 		const clockOutTime = dayjs(clockOutRecord!.checktime);
 		const totalHours = clockOutTime.diff(clockInTime, 'hour', true);
-		// 判断clockOutTime下班时间是否在17:30到18:00之间
-		if (clockOutTime.hour() >= 17 && clockOutTime.hour() < 18) {
-			// 如果在这个区间，则计算出超出17：:30到18：00的时间小时
-			const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30), 'hour', true);
-			// 随后，从总小时数中减去超出的小时数和午休时间1.5小时，得到实际工作小时数
-			workHours = totalHours - exceedHours - 1.5;
+		if (CalculationMethodType === 2) {
+			// 周末只扣除实际落在午休时段（12:00–13:30）内的时间，不应用工作日的17:30规则。
+			const lunchStart = clockInTime.hour(12).minute(0).second(0).millisecond(0);
+			const lunchEnd = lunchStart.add(1.5, 'hour');
+			const lunchOverlapStart = Math.max(clockInTime.valueOf(), lunchStart.valueOf());
+			const lunchOverlapEnd = Math.min(clockOutTime.valueOf(), lunchEnd.valueOf());
+			const lunchHours = Math.max(0, lunchOverlapEnd - lunchOverlapStart) / (60 * 60 * 1000);
+			workHours = totalHours - lunchHours;
 		} else {
-			workHours = totalHours - 1.5 - 0.5;
+			// 工作日规则：17:30–18:00不计入工时，午休扣除1.5小时。
+			if (clockOutTime.hour() >= 17 && clockOutTime.hour() < 18) {
+				const exceedHours = clockOutTime.diff(dayjs(clockOutTime).hour(17).minute(30), 'hour', true);
+				workHours = totalHours - exceedHours - 1.5;
+			} else {
+				workHours = totalHours - 1.5 - 0.5;
+			}
 		}
 		beInDebtHours = 8 - workHours;
 
