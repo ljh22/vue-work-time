@@ -39,8 +39,8 @@
 	import { inject, nextTick, onMounted, ref } from 'vue';
 	import { ElMessage } from 'element-plus';
 	import type { TableData } from '@/types/TableData';
-	import { tableJson } from '@/utils/json';
-	import type { Utils } from '@/types/utils';
+	import { tableJson } from '@/data/referenceAttendance';
+	import type { Utils } from '@/types/Utils';
 
 	const utils = inject<Utils>('$utils')!;
 	const emit = defineEmits<{

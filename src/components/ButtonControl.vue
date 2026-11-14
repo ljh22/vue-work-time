@@ -9,8 +9,8 @@
 
 		<Transition name="fade">
 			<div class="extra-options" v-if="CalculationMethodType !== -1">
-				<el-button type="primary" size="large" class="submit-btn" @click="handleSubmit">
-					开始解析数据
+				<el-button type="primary" size="large" class="submit-btn" :loading="props.isLoading" @click="handleSubmit">
+					{{ props.isLoading ? '正在解析数据…' : '开始解析数据' }}
 				</el-button>
 			</div>
 		</Transition>
@@ -27,6 +27,10 @@
 
 	// 定义子组件接受的props
 	const props = defineProps({
+		isLoading: {
+			type: Boolean,
+			default: false,
+		},
 		tableInitData: {
 			type: Array as () => Array<TableData>,
 			default: () => [],
@@ -43,6 +47,7 @@
 
 	// 定义emit事件
 	const emit = defineEmits<{
+		'processing-start': [];
 		handleShowTable: [show: boolean];
 		handleChangeTableData: [data: TableData[], CalculationMethodType: number];
 	}>();
@@ -57,7 +62,7 @@
 	};
 
 	// 解析数据
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		if (props.tableInitData.length === 0) {
 			ElMessage.warning('请先输入数据');
 			return;
@@ -67,7 +72,9 @@
 			return;
 		}
 		if (tempTableData.value.length !== 0) {
-			// 这里可以添加你的解析逻辑
+			emit('processing-start');
+			// 等一帧让加载状态完成绘制，再开始处理数据。
+			await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 			emit('handleShowTable', true);
 			// 创建新的数组引用，确保每次都能触发表格组件的watch监听
 			const newTableData = [...tempTableData.value];

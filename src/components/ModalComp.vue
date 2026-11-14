@@ -57,6 +57,8 @@
 			<div class="control-wrapper">
 				<ButtonControl
 					ref="buttonControlRef"
+					:isLoading="isProcessing"
+					@processing-start="isProcessing = true"
 					@handleShowTable="handleShowTable"
 					@handleChangeTableData="handleChangeTableData"
 					:tableInitData="tableInitData"
@@ -72,6 +74,7 @@
 				<TableComp
 					:showTableInitData="showTableInitData"
 					:CalculationMethodType="CalculationMethodType"
+					@processing-complete="isProcessing = false"
 					@update-data="handleUpdateTableData"
 				></TableComp>
 			</div>
@@ -181,7 +184,7 @@
 	import { ref, onMounted, watch, inject, nextTick } from 'vue';
 	import { Moon, Sunny, QuestionFilled } from '@element-plus/icons-vue';
 	import type { TableData } from '@/types/TableData';
-	import type { Utils } from '@/types/utils';
+	import type { Utils } from '@/types/Utils';
 	// 注入全局工具
 	const utils = inject<Utils>('$utils')!;
 
@@ -266,6 +269,7 @@
 	const tableInitData = ref<TableData[]>([]);
 	const showTableInitData = ref<TableData[]>([]);
 	const isShowTable = ref(false);
+	const isProcessing = ref(false);
 	const CalculationMethodType = ref<number>(-1);
 
 	const handleChangeTextarea = (value: string) => {

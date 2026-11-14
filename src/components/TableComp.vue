@@ -122,7 +122,7 @@
 	import { ref, watch, inject, h, nextTick } from 'vue';
 	import type { VNode } from 'vue';
 	import type { TableColumnCtx } from 'element-plus';
-	import type { Utils } from '@/types/utils';
+	import type { Utils } from '@/types/Utils';
 	import { Edit, Plus, Minus } from '@element-plus/icons-vue';
 	import { ElMessage, ElTooltip } from 'element-plus';
 	import dayjs from 'dayjs';
@@ -148,6 +148,7 @@
 
 	const emit = defineEmits<{
 		'update-data': [data: TableData[]];
+		'processing-complete': [];
 	}>();
 	const tableData = ref<ProcessedData[]>([]);
 	const allHours = ref<number>(0); // 总工时
@@ -194,14 +195,18 @@
 		[() => props.showTableInitData, () => props.CalculationMethodType],
 		async ([newData, newType]) => {
 			const token = ++watchToken;
-			// 获取数据年份的法定节假日数据（含调休上班日）
-			const year = newData.length > 0 ? dayjs(newData[0].dt).year() : dayjs().year();
-			const holidayMap = await getHolidayMap(year);
-			// 如果等待期间又触发了新的数据变化，则丢弃本次结果
-			if (token !== watchToken) return;
-			// 始终根据原始数据重新计算，确保编辑后的数据能正确更新
-			const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType, holidayMap);
-			tableData.value = processedData;
+			try {
+				// 获取数据年份的法定节假日数据（含调休上班日）
+				const year = newData.length > 0 ? dayjs(newData[0].dt).year() : dayjs().year();
+				const holidayMap = await getHolidayMap(year);
+				// 如果等待期间又触发了新的数据变化，则丢弃本次结果
+				if (token !== watchToken) return;
+				// 始终根据原始数据重新计算，确保编辑后的数据能正确更新
+				const processedData: ProcessedData[] = utils.firstProcessingTableData(newData, newType, holidayMap);
+				tableData.value = processedData;
+			} finally {
+				if (token === watchToken) emit('processing-complete');
+			}
 		},
 		{ deep: true, immediate: true },
 	);

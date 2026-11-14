@@ -132,15 +132,37 @@ pnpm build:prod
 ## 目录结构
 
 ```
-├── public/          # 静态资源（含插件配置）
+├── public/                         # 静态资源、扩展配置及运行脚本
+├── scripts/                        # 版本同步与打包脚本
 ├── src/
-│   ├── components/  # 组件
-│   ├── utils/       # 工具函数（版本检测等）
-│   ├── types/       # TypeScript 类型定义
-│   └── styles/      # 样式文件
-├── scripts/         # 构建脚本
-├── .env             # 开发环境配置
-└── .env.production  # 生产环境配置
+│   ├── assets/                     # 由应用导入的静态资源
+│   ├── components/
+│   │   ├── ButtonControl.vue        # 计算方式选择与数据解析按钮
+│   │   ├── ModalComp.vue            # 数据导入、设置、教程和结果区域
+│   │   ├── TableComp.vue            # 工时结果表格与记录编辑
+│   │   └── TipsComp.vue             # 顶部提示、参考数据和首次引导
+│   ├── data/
+│   │   └── referenceAttendance.ts   # 用于演示和复制的参考考勤数据
+│   ├── styles/
+│   │   ├── element-variables.scss   # Element Plus 样式变量
+│   │   ├── global.css               # 全局样式
+│   │   ├── variables.less           # Less 全局变量入口
+│   │   └── variables.sass           # Sass 全局变量
+│   ├── types/
+│   │   ├── TableData.ts             # 考勤记录与处理结果类型
+│   │   └── Utils.ts                 # 全局工具接口类型
+│   ├── utils/
+│   │   ├── attendance.ts            # 考勤记录的工时处理
+│   │   ├── holiday.ts               # 法定节假日与调休工作日数据
+│   │   ├── utils.ts                 # 通用工具接口及主题、版本辅助功能
+│   │   └── version.ts               # 当前应用版本号
+│   ├── App.vue                      # 应用外框与版本更新提示
+│   └── main.ts                      # Vue 应用入口与全局依赖注册
+├── .env                             # 开发环境配置
+├── .env.production                  # 生产环境配置
+├── index.html                       # HTML 入口
+├── package.json                     # 项目依赖与命令
+└── vite.config.ts                   # Vite 构建与开发服务器配置
 ```
 
 ## License
